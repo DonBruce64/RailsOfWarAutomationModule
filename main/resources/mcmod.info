@@ -1,0 +1,16 @@
+[
+{
+  "modid": "rowaw",
+  "name": "Rails of War Automation Module",
+  "description": "(Unofficial) Automation and extras for Rails of War.",
+  "version": "5.4.0",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["don_bruce"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
