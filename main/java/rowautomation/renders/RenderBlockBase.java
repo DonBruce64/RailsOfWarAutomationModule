@@ -2,10 +2,13 @@ package rowautomation.renders;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.world.IBlockAccess;
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 
-public class RenderBlockBase implements ISimpleBlockRenderingHandler{
+public abstract class RenderBlockBase implements ISimpleBlockRenderingHandler{
+	protected Tessellator tessellator = Tessellator.instance;
+	
 	protected double[][][] rotateRender(double[][][] points, double angle, int numShapes){
 		double[][][] rotated = new double[numShapes][4][5];
 		for(int i=0; i<numShapes; ++i){
@@ -21,7 +24,6 @@ public class RenderBlockBase implements ISimpleBlockRenderingHandler{
 	}
 	
 	public void renderInventoryBlock(Block block, int metadata, int modelId, RenderBlocks renderer){}
-	public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int modelId, RenderBlocks renderer){return false;}
 	public boolean shouldRender3DInInventory(int modelId){return false;}
 	public int getRenderId(){return 0;}
 }

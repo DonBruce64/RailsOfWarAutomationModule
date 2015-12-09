@@ -13,16 +13,17 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockHalfCrossing extends Block{
+public abstract class BlockCrossingBase extends Block{
 	public static int renderID = RenderingRegistry.getNextAvailableRenderId();
 	public IIcon rampIcon;
+	public IIcon sideIcon;
+	public IIcon centerIcon;
 	
-	public BlockHalfCrossing() {
+	public BlockCrossingBase(){
 		super(Material.rock);
 		this.blockHardness=-1;
 		this.setCreativeTab(ROWAM.tabROWAM);
 		this.setBlockBounds(0, 0, 0, 1, 0.2F, 1);
-		this.setBlockName("HalfCrossingBlock");
 	}
 	
 	@Override
@@ -54,13 +55,21 @@ public class BlockHalfCrossing extends Block{
 	@Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister par1IconRegister){
-		rampIcon = par1IconRegister.registerIcon("rowam:crossingblock");
+		rampIcon = par1IconRegister.registerIcon("rowam:crossingblock_ramp");
+		sideIcon = par1IconRegister.registerIcon("rowam:crossingblock_side");
+		centerIcon = par1IconRegister.registerIcon("rowam:crossingblock_center");
     }
     
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(int side, int meta){
-    	return rampIcon;
+    	if(side == 0){
+    		return centerIcon;
+    	}else if(side == 1){
+    		return rampIcon;
+    	}else{
+    		return sideIcon;
+    	}
 	}	
 	
     @Override

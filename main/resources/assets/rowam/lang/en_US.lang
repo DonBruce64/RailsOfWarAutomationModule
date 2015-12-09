@@ -1,6 +1,7 @@
 item.BigClock.name=Big Clock
 tile.FullCrossingBlock.name=Full Crossing Block
 tile.HalfCrossingBlock.name=Half Crossing Block
+tile.CenterCrossingBlock.name=Center Crossing Block
 tile.PlatformBlock.name=Platform Block
 tile.SignalBlock.name=Signal Block
 tile.StationBlock.name=Station Block

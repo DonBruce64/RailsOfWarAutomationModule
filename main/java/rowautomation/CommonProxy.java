@@ -6,8 +6,9 @@ import rowautomation.blocks.controller.BlockPointer;
 import rowautomation.blocks.controller.BlockSignal;
 import rowautomation.blocks.controller.BlockStation;
 import rowautomation.blocks.controller.BlockTank;
-import rowautomation.blocks.decorative.BlockFullCrossing;
-import rowautomation.blocks.decorative.BlockHalfCrossing;
+import rowautomation.blocks.decorative.BlockCrossingCenter;
+import rowautomation.blocks.decorative.BlockCrossingFull;
+import rowautomation.blocks.decorative.BlockCrossingHalf;
 import rowautomation.blocks.decorative.BlockPlatform;
 import rowautomation.clock.EntityBigClock;
 import rowautomation.clock.ItemBigClock;
@@ -41,8 +42,9 @@ public class CommonProxy{
 	    GameRegistry.registerBlock(new BlockFueler(), "FuelingBlock");
 	    GameRegistry.registerBlock(new BlockDetector(), "DetectorBlock");
 	    
-	    GameRegistry.registerBlock(new BlockFullCrossing(), "FullCrossingBlock");
-	    GameRegistry.registerBlock(new BlockHalfCrossing(), "HalfCrossingBlock");
+	    GameRegistry.registerBlock(new BlockCrossingFull(), "FullCrossingBlock");
+	    GameRegistry.registerBlock(new BlockCrossingHalf(), "HalfCrossingBlock");
+	    GameRegistry.registerBlock(new BlockCrossingCenter(), "CenterCrossingBlock");
 	    GameRegistry.registerBlock(new BlockPlatform(), "PlatformBlock");
 	}
 	
