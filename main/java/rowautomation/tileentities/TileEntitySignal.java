@@ -4,67 +4,42 @@ import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class TileEntitySignal extends TileEntityBase{
-	public int ReverseMax=999;
-	public int ReverseMin=-1;
-	public int ReverseSetMax=0;
-	public int ReverseSetMin=0;
-	public String LocoLabel="";
-	private int Cooldown=0;
-	private Entity Locomotive;
-	private NBTTagCompound LocomotiveNBT;
+	public int reverseMax=999;
+	public int reverseMin=-1;
+	public int reverseSetMax=0;
+	public int reverseSetMin=0;
+	public String locoLabel="";
+	private int cooldown=0;
 	
 	@Override
 	public void updateEntity(){
-		if(Cooldown>0){
-			--Cooldown;
+		if(cooldown>0){
+			--cooldown;
 			return;
 		}
 		changeOpStatus(false);
-		if(this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)>0){return;}
-		Locomotive=getNearbyStock("loco",this.Range);
-		if(Locomotive==null){return;}
-		LocomotiveNBT=getStockNBT(Locomotive);
-		if(LocomotiveNBT==null){return;}
-		int CurrentReverse=LocomotiveNBT.getInteger("reverse");
-		if(!this.LocoLabel.equals("") && !LocomotiveNBT.getString("label").equals(this.LocoLabel)){return;}
-		if(Math.abs(CurrentReverse)>ReverseMax){
-			if(Math.abs(CurrentReverse)!=Math.abs(ReverseSetMax)){
-				LocomotiveNBT.setInteger("reverse", sign(CurrentReverse)*ReverseSetMax);
-				setStockNBT(Locomotive, LocomotiveNBT);
+		if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
+		Entity locomotive=getNearbyStock("loco",range);
+		if(locomotive==null){return;}
+		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
+		if(locomotiveNBT==null){return;}
+		int currentReverse = locomotiveNBT.getInteger("reverse");
+		if(!this.locoLabel.equals("") && !locomotiveNBT.getString("label").equals(this.locoLabel)){return;}
+		if(Math.abs(currentReverse)>reverseMax){
+			if(Math.abs(currentReverse)!=Math.abs(reverseSetMax)){
+				locomotiveNBT.setInteger("reverse", sign(currentReverse)*reverseSetMax);
+				setStockNBT(locomotive, locomotiveNBT);
 				changeOpStatus(true);
-				Cooldown=10;
+				cooldown=10;
 			}
-		}else if(Math.abs(CurrentReverse)<ReverseMin){
-			if(Math.abs(CurrentReverse)!=Math.abs(ReverseSetMin)){
-				LocomotiveNBT.setInteger("reverse", sign(CurrentReverse)*ReverseSetMin);
-				setStockNBT(Locomotive, LocomotiveNBT);
+		}else if(Math.abs(currentReverse)<reverseMin){
+			if(Math.abs(currentReverse)!=Math.abs(reverseSetMin)){
+				locomotiveNBT.setInteger("reverse", sign(currentReverse)*reverseSetMin);
+				setStockNBT(locomotive, locomotiveNBT);
 				changeOpStatus(true);
-				Cooldown=10;
+				cooldown=10;
 			}
 		}
-	}
-	
-
-	@Override
-	public void readFromNBT(NBTTagCompound tagcompound){
-		super.readFromNBT(tagcompound);
-	    this.FinishedOperation=tagcompound.getBoolean("FinishedOperation");
-	    this.ReverseMax=tagcompound.getInteger("ReverseMax");
-	    this.ReverseMin=tagcompound.getInteger("ReverseMin");
-	    this.ReverseSetMax=tagcompound.getInteger("ReverseSetMax");
-	    this.ReverseSetMin=tagcompound.getInteger("ReverseSetMin");
-	    this.LocoLabel = tagcompound.getString("LocoLabel");
-	}
-	
-	@Override
-	public void writeToNBT(NBTTagCompound tagcompound){
-		super.writeToNBT(tagcompound);
-		tagcompound.setBoolean("FinishedOperation", this.FinishedOperation);
-		tagcompound.setInteger("ReverseMax", this.ReverseMax);
-		tagcompound.setInteger("ReverseMin", this.ReverseMin);
-		tagcompound.setInteger("ReverseSetMax", this.ReverseSetMax);
-		tagcompound.setInteger("ReverseSetMin", this.ReverseSetMin);
-		tagcompound.setString("LocoLabel", this.LocoLabel);
 	}
 	
 	int sign(int i) {
@@ -73,5 +48,25 @@ public class TileEntitySignal extends TileEntityBase{
 	    }else{
 	    	return 1;
 		}
-	}	
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound tagcompound){
+		super.readFromNBT(tagcompound);
+	    this.reverseMax=tagcompound.getInteger("reverseMax");
+	    this.reverseMin=tagcompound.getInteger("reverseMin");
+	    this.reverseSetMax=tagcompound.getInteger("reverseSetMax");
+	    this.reverseSetMin=tagcompound.getInteger("reverseSetMin");
+	    this.locoLabel = tagcompound.getString("locoLabel");
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound tagcompound){
+		super.writeToNBT(tagcompound);
+		tagcompound.setInteger("reverseMax", this.reverseMax);
+		tagcompound.setInteger("reverseMin", this.reverseMin);
+		tagcompound.setInteger("reverseSetMax", this.reverseSetMax);
+		tagcompound.setInteger("reverseSetMin", this.reverseSetMin);
+		tagcompound.setString("locoLabel", this.locoLabel);
+	}
 }

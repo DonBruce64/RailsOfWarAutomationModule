@@ -18,8 +18,8 @@ public class BlockFueler extends BlockBase{
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-		TileEntityFueler ThisTileEntity=(TileEntityFueler) world.getTileEntity(x, y, z);
-		int blockMetadata = ThisTileEntity.getBlockMetadata();
+		TileEntityFueler thisTileEntity = (TileEntityFueler) world.getTileEntity(x, y, z);
+		int blockMetadata = thisTileEntity.getBlockMetadata();
 		if(player.capabilities.isCreativeMode){
 			if(blockMetadata==0){
 				world.setBlockMetadataWithNotify(x, y, z, 1, 2);

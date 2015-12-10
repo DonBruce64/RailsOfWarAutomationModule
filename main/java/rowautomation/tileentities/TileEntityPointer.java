@@ -5,43 +5,41 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
 public class TileEntityPointer extends TileEntityBase{
-	public Boolean Locked=true;
-	public Boolean Redstone=false;
-	public Boolean Spring=false;
-	public Boolean Switched=false;
-	public String LocoLabel="";
-	private Entity Locomotive;
-	private NBTTagCompound LocomotiveNBT;
+	public Boolean locked=true;
+	public Boolean redstone=false;
+	public Boolean spring=false;
+	public Boolean switched=false;
+	public String locoLabel="";
 	
 	@Override
 	public void updateEntity(){
-		if(this.Redstone){
-			if(this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)>0){
+		if(redstone){
+			if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){
 				changePointer(true);
 			}else{
 				changePointer(false);
 			}
 			return;
-		}else if(this.Spring){
-			if(Switched){
+		}else if(spring){
+			if(switched){
 				changePointer(true);
 			}else{
 				changePointer(false);
 			}
 			return;
 		}
-		if(LocoLabel==""){return;}
-		Locomotive=getNearbyStock("loco",Range);
-		if(Locomotive==null){return;}
-		LocomotiveNBT=getStockNBT(Locomotive);
-		if(LocomotiveNBT==null){return;}
-		if(LocomotiveNBT.getString("label").equals(this.LocoLabel) && !(LocomotiveNBT.getBoolean("switched")==this.Switched)){
-			LocomotiveNBT.setBoolean("switched", this.Switched);
-			setStockNBT(Locomotive, LocomotiveNBT);
+		if(locoLabel==""){return;}
+		Entity locomotive=getNearbyStock("loco",range);
+		if(locomotive==null){return;}
+		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
+		if(locomotiveNBT==null){return;}
+		if(locomotiveNBT.getString("label").equals(this.locoLabel) && !(locomotiveNBT.getBoolean("switched")==this.switched)){
+			locomotiveNBT.setBoolean("switched", this.switched);
+			setStockNBT(locomotive, locomotiveNBT);
 		}
-		if(!LocomotiveNBT.getString("label").equals(this.LocoLabel) && LocomotiveNBT.getBoolean("switched")==this.Switched && Locked){
-			LocomotiveNBT.setBoolean("switched", !this.Switched);
-			setStockNBT(Locomotive, LocomotiveNBT);
+		if(!locomotiveNBT.getString("label").equals(this.locoLabel) && locomotiveNBT.getBoolean("switched")==this.switched && locked){
+			locomotiveNBT.setBoolean("switched", !this.switched);
+			setStockNBT(locomotive, locomotiveNBT);
 		}
 	}
 	
@@ -49,39 +47,39 @@ public class TileEntityPointer extends TileEntityBase{
 	@Override
 	public void readFromNBT(NBTTagCompound tagcompound){
 		super.readFromNBT(tagcompound);
-	    this.Locked=tagcompound.getBoolean("Locked");
-	    this.Redstone=tagcompound.getBoolean("Redstone");
-	    this.Spring=tagcompound.getBoolean("Spring");
-	    this.Switched=tagcompound.getBoolean("Switched");
-	    this.LocoLabel=tagcompound.getString("LocoLabel");
+	    this.locked=tagcompound.getBoolean("locked");
+	    this.redstone=tagcompound.getBoolean("redstone");
+	    this.spring=tagcompound.getBoolean("spring");
+	    this.switched=tagcompound.getBoolean("switched");
+	    this.locoLabel=tagcompound.getString("locoLabel");
 	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound tagcompound){
 		super.writeToNBT(tagcompound);
-		tagcompound.setBoolean("Locked", this.Locked);
-		tagcompound.setBoolean("Redstone", this.Redstone);
-		tagcompound.setBoolean("Spring", this.Spring);
-		tagcompound.setBoolean("Switched", this.Switched);
-		tagcompound.setString("LocoLabel", this.LocoLabel);
+		tagcompound.setBoolean("locked", this.locked);
+		tagcompound.setBoolean("redstone", this.redstone);
+		tagcompound.setBoolean("spring", this.spring);
+		tagcompound.setBoolean("switched", this.switched);
+		tagcompound.setString("locoLabel", this.locoLabel);
 	}
 	
 	private void changePointer(boolean switchStatus){
-		for(int i=0;i<this.worldObj.loadedTileEntityList.size();++i){
-			if(this.worldObj.loadedTileEntityList.get(i).getClass().getName().equals("net.row.tileentity.TileEntityTrackNormal")){
-				TileEntity Track=(TileEntity) this.worldObj.loadedTileEntityList.get(i);
-				NBTTagCompound TrackNBTTag=getStockNBT(Track);
-				if(Math.abs(Track.xCoord-this.xCoord)<=Range && Math.abs(Track.yCoord-this.yCoord)<=Range && Math.abs(Track.zCoord-this.zCoord)<=Range){
-					int Mid=TrackNBTTag.getInteger("mid");
-					if((Mid>=15 && Mid<=20)||(Mid>=27 && Mid <=32)){
-						if(!TrackNBTTag.getBoolean("act") && switchStatus){
-							TrackNBTTag.setBoolean("act",true);
-							setStockNBT(Track,TrackNBTTag);
+		for(int i=0;i<worldObj.loadedTileEntityList.size();++i){
+			if(worldObj.loadedTileEntityList.get(i).getClass().getName().equals("net.row.tileentity.TileEntityTrackNormal")){
+				TileEntity track=(TileEntity) worldObj.loadedTileEntityList.get(i);
+				NBTTagCompound trackNBTTag=getStockNBT(track);
+				if(Math.abs(track.xCoord-this.xCoord)<=range && Math.abs(track.yCoord-this.yCoord)<=range && Math.abs(track.zCoord-this.zCoord)<=range){
+					int mid=trackNBTTag.getInteger("mid");
+					if((mid>=15 && mid<=20)||(mid>=27 && mid <=32)){
+						if(!trackNBTTag.getBoolean("act") && switchStatus){
+							trackNBTTag.setBoolean("act",true);
+							setStockNBT(track,trackNBTTag);
 							return;
 						}
-						if(TrackNBTTag.getBoolean("act") && !switchStatus){
-							TrackNBTTag.setBoolean("act",false);
-							setStockNBT(Track,TrackNBTTag);
+						if(trackNBTTag.getBoolean("act") && !switchStatus){
+							trackNBTTag.setBoolean("act",false);
+							setStockNBT(track,trackNBTTag);
 							return;
 						}
 					}					

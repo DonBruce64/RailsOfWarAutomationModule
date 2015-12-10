@@ -13,33 +13,33 @@ public class PacketStation implements IMessage{
 	private int x;
 	private int y;
 	private int z;
-	private int OpMode;
-	private int ReverseSet;
-	private int TickDelay;
-	private int WhistleMode;
-	private int LoadingOps;
-	private int UnloadingOps;
-	private float WhistleVolume;
-	private float WhistlePitch;
-	private long ScheduledTime;
-	private String LocoLabel;
+	private int opMode;
+	private int reverseSet;
+	private int tickDelay;
+	private int whistleMode;
+	private int loadingOps;
+	private int unloadingOps;
+	private float whistleVolume;
+	private float whistlePitch;
+	private long scheduledTime;
+	private String locoLabel;
 
 	public PacketStation() { }
 	
-	public PacketStation(int x, int y, int z, int OpMode, int ReverseSet, int TickDelay, int WhistleMode, int LoadingOps, int UnloadingOps, float WhistleVolume, float WhistlePitch, long ScheduledTime, String LocoLabel){
+	public PacketStation(int x, int y, int z, int opMode, int reverseSet, int tickDelay, int whistleMode, int loadingOps, int unloadingOps, float whistleVolume, float whistlePitch, long scheduledTime, String locoLabel){
 		this.x=x;
 		this.y=y;
 		this.z=z;
-		this.OpMode=OpMode;
-		this.ReverseSet=ReverseSet;
-		this.TickDelay=TickDelay;
-		this.WhistleMode=WhistleMode;
-		this.LoadingOps=LoadingOps;
-		this.UnloadingOps=UnloadingOps;
-		this.WhistleVolume=WhistleVolume;
-		this.WhistlePitch=WhistlePitch;
-		this.ScheduledTime=ScheduledTime;
-		this.LocoLabel=LocoLabel;
+		this.opMode=opMode;
+		this.reverseSet=reverseSet;
+		this.tickDelay=tickDelay;
+		this.whistleMode=whistleMode;
+		this.loadingOps=loadingOps;
+		this.unloadingOps=unloadingOps;
+		this.whistleVolume=whistleVolume;
+		this.whistlePitch=whistlePitch;
+		this.scheduledTime=scheduledTime;
+		this.locoLabel=locoLabel;
 	}
 	
 	@Override
@@ -47,16 +47,16 @@ public class PacketStation implements IMessage{
 		this.x=buf.readInt();
 		this.y=buf.readInt();
 		this.z=buf.readInt();
-		this.OpMode=buf.readInt();
-		this.ReverseSet=buf.readInt();
-		this.TickDelay=buf.readInt();
-		this.WhistleMode=buf.readInt();
-		this.LoadingOps=buf.readInt();
-		this.UnloadingOps=buf.readInt();
-		this.WhistleVolume=buf.readFloat();
-		this.WhistlePitch=buf.readFloat();
-		this.ScheduledTime=buf.readLong();
-		this.LocoLabel=ByteBufUtils.readUTF8String(buf);
+		this.opMode=buf.readInt();
+		this.reverseSet=buf.readInt();
+		this.tickDelay=buf.readInt();
+		this.whistleMode=buf.readInt();
+		this.loadingOps=buf.readInt();
+		this.unloadingOps=buf.readInt();
+		this.whistleVolume=buf.readFloat();
+		this.whistlePitch=buf.readFloat();
+		this.scheduledTime=buf.readLong();
+		this.locoLabel=ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
@@ -64,33 +64,33 @@ public class PacketStation implements IMessage{
 		buf.writeInt(this.x);
 		buf.writeInt(this.y);
 		buf.writeInt(this.z);
-		buf.writeInt(this.OpMode);
-		buf.writeInt(this.ReverseSet);
-		buf.writeInt(this.TickDelay);
-		buf.writeInt(this.WhistleMode);
-		buf.writeInt(this.LoadingOps);
-		buf.writeInt(this.UnloadingOps);
-		buf.writeFloat(this.WhistleVolume);
-		buf.writeFloat(this.WhistlePitch);
-		buf.writeLong(this.ScheduledTime);
-		ByteBufUtils.writeUTF8String(buf, this.LocoLabel);
+		buf.writeInt(this.opMode);
+		buf.writeInt(this.reverseSet);
+		buf.writeInt(this.tickDelay);
+		buf.writeInt(this.whistleMode);
+		buf.writeInt(this.loadingOps);
+		buf.writeInt(this.unloadingOps);
+		buf.writeFloat(this.whistleVolume);
+		buf.writeFloat(this.whistlePitch);
+		buf.writeLong(this.scheduledTime);
+		ByteBufUtils.writeUTF8String(buf, this.locoLabel);
 	}
 
 	public static class StationPacketHandler implements IMessageHandler<PacketStation, IMessage> {
 		@Override
 		public IMessage onMessage(PacketStation message, MessageContext ctx) {
 			if(ctx.side==Side.SERVER){
-				TileEntityStation ThisTileEntity = (TileEntityStation) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
-				ThisTileEntity.OpMode=message.OpMode;
-				ThisTileEntity.ReverseSet=message.ReverseSet;
-				ThisTileEntity.TickDelay=message.TickDelay;
-				ThisTileEntity.WhistleMode=message.WhistleMode;
-				ThisTileEntity.LoadingOps=message.LoadingOps;
-				ThisTileEntity.UnloadingOps=message.UnloadingOps;
-				ThisTileEntity.WhistleVolume=message.WhistleVolume;
-				ThisTileEntity.WhistlePitch=message.WhistlePitch;
-				ThisTileEntity.ScheduledTime=message.ScheduledTime;
-				ThisTileEntity.LocoLabel=message.LocoLabel;
+				TileEntityStation thisTileEntity = (TileEntityStation) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
+				thisTileEntity.opMode=message.opMode;
+				thisTileEntity.reverseSet=message.reverseSet;
+				thisTileEntity.tickDelay=message.tickDelay;
+				thisTileEntity.whistleMode=message.whistleMode;
+				thisTileEntity.loadingOps=message.loadingOps;
+				thisTileEntity.unloadingOps=message.unloadingOps;
+				thisTileEntity.whistleVolume=message.whistleVolume;
+				thisTileEntity.whistlePitch=message.whistlePitch;
+				thisTileEntity.scheduledTime=message.scheduledTime;
+				thisTileEntity.locoLabel=message.locoLabel;
 				ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(message.x, message.y, message.z);
 			}
 			return null;

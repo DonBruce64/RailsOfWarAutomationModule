@@ -34,7 +34,7 @@ public class BlockBase extends BlockContainer implements ITileEntityProvider{
     public int getComparatorInputOverride(World world, int x, int y, int z, int q){
 		TileEntityBase ThisTileEntity=(TileEntityBase) world.getTileEntity(x, y, z);
 		int RedstoneStrength=0;
-		if(ThisTileEntity.FinishedOperation){RedstoneStrength=15;}
+		if(ThisTileEntity.finishedOperation){RedstoneStrength=15;}
 		return RedstoneStrength;
     }
 	

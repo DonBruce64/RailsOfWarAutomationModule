@@ -12,9 +12,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class BlockTank extends BlockBase{
-	public static IIcon EndIcon;
-	public static IIcon FillingSidesIcon;
-    public static IIcon DrainingSidesIcon;
+	public static IIcon endIcon;
+	public static IIcon fillingSidesIcon;
+    public static IIcon drainingSidesIcon;
     
 	public BlockTank() {
 		super();
@@ -23,13 +23,13 @@ public class BlockTank extends BlockBase{
 	
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9){
-		TileEntityTank ThisTileEntity=(TileEntityTank) world.getTileEntity(x, y, z);
-		if(ThisTileEntity.Drain){
-			ThisTileEntity.Drain=false;
+		TileEntityTank thisTileEntity = (TileEntityTank) world.getTileEntity(x, y, z);
+		if(thisTileEntity.drain){
+			thisTileEntity.drain=false;
 			world.markBlockForUpdate(x, y, z);
 			return true;
 		}else{
-			ThisTileEntity.Drain=true;
+			thisTileEntity.drain=true;
 			world.markBlockForUpdate(x, y, z);
 			return true;
 		}
@@ -43,34 +43,33 @@ public class BlockTank extends BlockBase{
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister par1IconRegister){
-    	EndIcon=par1IconRegister.registerIcon("rowam:blockbase");
-    	FillingSidesIcon=par1IconRegister.registerIcon("rowam:fillingblock");
-    	DrainingSidesIcon=par1IconRegister.registerIcon("rowam:drainingblock");
+    	endIcon=par1IconRegister.registerIcon("rowam:blockbase");
+    	fillingSidesIcon=par1IconRegister.registerIcon("rowam:fillingblock");
+    	drainingSidesIcon=par1IconRegister.registerIcon("rowam:drainingblock");
     }
     
     @Override
     @SideOnly(Side.CLIENT)
     public IIcon getIcon(IBlockAccess blockAccess, int x, int y, int z, int side){
     	if(side==0 || side==1){
-    		return this.EndIcon;
+    		return this.endIcon;
     	}else{
-    		TileEntityTank ThisTileEntity=(TileEntityTank) blockAccess.getTileEntity(x, y, z);
-    		if(ThisTileEntity.Drain){
-    			return this.DrainingSidesIcon;
+    		TileEntityTank thisTileEntity = (TileEntityTank) blockAccess.getTileEntity(x, y, z);
+    		if(thisTileEntity.drain){
+    			return this.drainingSidesIcon;
     		}else{
-    			return this.FillingSidesIcon;
+    			return this.fillingSidesIcon;
     		}
 		}
 	}
     
     @Override
     @SideOnly(Side.CLIENT)
-    public IIcon getIcon(int par1, int par2)
-    {
-    	if(par1==0 || par1==1){
-    		return this.EndIcon;
+    public IIcon getIcon(int side, int meta){
+    	if(side==0 || side==1){
+    		return this.endIcon;
     	}else{
-    		return this.FillingSidesIcon;
+    		return this.fillingSidesIcon;
     	}
 	}
 }

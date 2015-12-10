@@ -81,7 +81,6 @@ public class Chunkloader implements LoadingCallback{
 					}
 				}	
 				if(stock.riddenByEntity!=null){
-					System.out.println(stockName);
 					if(!(stock.riddenByEntity instanceof EntityPlayer)){
 						stock.riddenByEntity.motionY=0;	
 						if(stockName.contains("cart")){

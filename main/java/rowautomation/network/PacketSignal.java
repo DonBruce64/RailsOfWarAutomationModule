@@ -2,7 +2,6 @@ package rowautomation.network;
 
 import io.netty.buffer.ByteBuf;
 import rowautomation.tileentities.TileEntitySignal;
-import rowautomation.tileentities.TileEntityStation;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -14,23 +13,23 @@ public class PacketSignal implements IMessage{
 	private int x;
 	private int y;
 	private int z;
-	private int ReverseMax;
-	private int ReverseMin;
-	private int ReverseSetMax;
-	private int ReverseSetMin;
-	private String LocoLabel;
+	private int reverseMax;
+	private int reverseMin;
+	private int reverseSetMax;
+	private int reverseSetMin;
+	private String locoLabel;
 
 	public PacketSignal() { }
 	
-	public PacketSignal(int x, int y, int z, int ReverseMax, int ReverseMin, int ReverseSetMax, int ReverseSetMin, String LocoLabel){
+	public PacketSignal(int x, int y, int z, int reverseMax, int reverseMin, int reverseSetMax, int reverseSetMin, String locoLabel){
 		this.x=x;
 		this.y=y;
 		this.z=z;
-		this.ReverseMax=ReverseMax;
-		this.ReverseMin=ReverseMin;
-		this.ReverseSetMax=ReverseSetMax;
-		this.ReverseSetMin=ReverseSetMin;
-		this.LocoLabel=LocoLabel;
+		this.reverseMax=reverseMax;
+		this.reverseMin=reverseMin;
+		this.reverseSetMax=reverseSetMax;
+		this.reverseSetMin=reverseSetMin;
+		this.locoLabel=locoLabel;
 	}
 	
 	@Override
@@ -38,11 +37,11 @@ public class PacketSignal implements IMessage{
 		this.x=buf.readInt();
 		this.y=buf.readInt();
 		this.z=buf.readInt();
-		this.ReverseMax=buf.readInt();
-		this.ReverseMin=buf.readInt();
-		this.ReverseSetMax=buf.readInt();
-		this.ReverseSetMin=buf.readInt();
-		this.LocoLabel=ByteBufUtils.readUTF8String(buf);
+		this.reverseMax=buf.readInt();
+		this.reverseMin=buf.readInt();
+		this.reverseSetMax=buf.readInt();
+		this.reverseSetMin=buf.readInt();
+		this.locoLabel=ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
@@ -50,23 +49,23 @@ public class PacketSignal implements IMessage{
 		buf.writeInt(this.x);
 		buf.writeInt(this.y);
 		buf.writeInt(this.z);
-		buf.writeInt(this.ReverseMax);
-		buf.writeInt(this.ReverseMin);
-		buf.writeInt(this.ReverseSetMax);
-		buf.writeInt(this.ReverseSetMin);
-		ByteBufUtils.writeUTF8String(buf, this.LocoLabel);
+		buf.writeInt(this.reverseMax);
+		buf.writeInt(this.reverseMin);
+		buf.writeInt(this.reverseSetMax);
+		buf.writeInt(this.reverseSetMin);
+		ByteBufUtils.writeUTF8String(buf, this.locoLabel);
 	}
 
 	public static class SignalPacketHandler implements IMessageHandler<PacketSignal, IMessage> {
 		@Override
 		public IMessage onMessage(PacketSignal message, MessageContext ctx) {
 			if(ctx.side==Side.SERVER){
-				TileEntitySignal ThisTileEntity = (TileEntitySignal) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
-				ThisTileEntity.ReverseMax=message.ReverseMax;
-				ThisTileEntity.ReverseMin=message.ReverseMin;
-				ThisTileEntity.ReverseSetMax=message.ReverseSetMax;
-				ThisTileEntity.ReverseSetMin=message.ReverseSetMin;
-				ThisTileEntity.LocoLabel=message.LocoLabel;
+				TileEntitySignal thisTileEntity = (TileEntitySignal) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
+				thisTileEntity.reverseMax=message.reverseMax;
+				thisTileEntity.reverseMin=message.reverseMin;
+				thisTileEntity.reverseSetMax=message.reverseSetMax;
+				thisTileEntity.reverseSetMin=message.reverseSetMin;
+				thisTileEntity.locoLabel=message.locoLabel;
 				ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(message.x, message.y, message.z);
 			}
 			return null;

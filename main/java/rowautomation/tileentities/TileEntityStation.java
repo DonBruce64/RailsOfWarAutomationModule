@@ -3,125 +3,80 @@ package rowautomation.tileentities;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.passive.EntityChicken;
-import net.minecraft.entity.passive.EntityVillager;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
 
 public class TileEntityStation extends TileEntityBase{
-	public int OpMode=1;
-	public int ReverseSet=5;
-	public int Ticks=1;
-	public int TickDelay=500;
-	public int WhistleMode=1;
-	public int LoadingOps=0;
-	public int UnloadingOps=100;
-	public float WhistleVolume=1;
-	public float WhistlePitch=1;
-	public long ScheduledTime=0;
-	public String LocoLabel="";
-	private Entity Locomotive;
-	private NBTTagCompound LocomotiveNBT;
+	public int opMode=1;
+	public int reverseSet=5;
+	public int ticks=1;
+	public int tickDelay=500;
+	public int whistleMode=1;
+	public int loadingOps=0;
+	public int unloadingOps=100;
+	public float whistleVolume=1;
+	public float whistlePitch=1;
+	public long scheduledTime=0;
+	public String locoLabel="";
 	
 	@Override
 	public void updateEntity(){
 		changeOpStatus(false);
-		Locomotive=getNearbyStock("loco", Range);
-		if(Locomotive==null){return;}
-		LocomotiveNBT=getStockNBT(Locomotive);
-		if(!(LocomotiveNBT.getInteger("reverse")==0)){return;}
-		if(!this.LocoLabel.equals("") && !LocomotiveNBT.getString("label").equals(this.LocoLabel)){return;}
+		Entity locomotive=getNearbyStock("loco", range);
+		if(locomotive==null){return;}
+		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
+		if(!(locomotiveNBT.getInteger("reverse")==0)){return;}
+		if(!this.locoLabel.equals("") && !locomotiveNBT.getString("label").equals(this.locoLabel)){return;}
 		changeOpStatus(true);
-		if(LocomotiveNBT.getBoolean("brake")==false){
-			LocomotiveNBT.setBoolean("brake",true);
-			setStockNBT(Locomotive, LocomotiveNBT);
+		if(locomotiveNBT.getBoolean("brake")==false){
+			locomotiveNBT.setBoolean("brake",true);
+			setStockNBT(locomotive, locomotiveNBT);
 			unmountEntities();
-			if(WhistleMode==2 || WhistleMode==4){blowWhistle();}
+			if(whistleMode==2 || whistleMode==4){blowWhistle(locomotive);}
 		}
-		if(OpMode==1){
-			++Ticks;
-			if(Ticks<TickDelay){return;}
+		if(opMode==1){
+			++ticks;
+			if(ticks<tickDelay){return;}
 		}
-		if(OpMode==2 && (worldObj.getWorldTime()%24000) != ScheduledTime){return;}
-		if(OpMode==3 && (this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)==0)){return;}
-		LocomotiveNBT.setInteger("reverse", ReverseSet);
-		LocomotiveNBT.setBoolean("brake",false);
-		setStockNBT(Locomotive, LocomotiveNBT);
+		if(opMode==2 && (worldObj.getWorldTime()%24000) != scheduledTime){return;}
+		if(opMode==3 && (this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)==0)){return;}
+		locomotiveNBT.setInteger("reverse", reverseSet);
+		locomotiveNBT.setBoolean("brake",false);
+		setStockNBT(locomotive, locomotiveNBT);
 		mountEntities();
-		if(WhistleMode==3 || WhistleMode==4){blowWhistle();}
+		if(whistleMode==3 || whistleMode==4){blowWhistle(locomotive);}
 		changeOpStatus(false);
-		Ticks=1;
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound tagcompound){
-		super.readFromNBT(tagcompound);
-	    this.FinishedOperation=tagcompound.getBoolean("FinishedOperation");
-	    this.OpMode=tagcompound.getInteger("OpMode");
-	    this.Ticks=tagcompound.getInteger("Ticks");
-	    this.TickDelay=tagcompound.getInteger("TickDelay");
-	    this.ReverseSet=tagcompound.getInteger("ReverseSet");
-	    this.WhistleMode=tagcompound.getInteger("WhistleMode");
-	    this.LoadingOps=tagcompound.getInteger("LoadingOps");
-	    this.UnloadingOps=tagcompound.getInteger("UnloadingOps");
-	    this.WhistleVolume=tagcompound.getFloat("WhistleVolume");
-	    this.WhistlePitch=tagcompound.getFloat("WhistlePitch");
-	    this.ScheduledTime=tagcompound.getLong("ScheduledTime");
-	    this.LocoLabel = tagcompound.getString("LocoLabel");
+		ticks=1;
 	}
 	
-	@Override
-	public void writeToNBT(NBTTagCompound tagcompound){
-		super.writeToNBT(tagcompound);
-		tagcompound.setBoolean("FinishedOperation", this.FinishedOperation);
-		tagcompound.setInteger("OpMode", this.OpMode);
-		tagcompound.setInteger("Ticks", this.Ticks);
-		tagcompound.setInteger("TickDelay", this.TickDelay);
-		tagcompound.setInteger("ReverseSet", this.ReverseSet);
-		tagcompound.setInteger("WhistleMode", this.WhistleMode);
-		tagcompound.setInteger("LoadingOps", this.LoadingOps);
-		tagcompound.setInteger("UnloadingOps", this.UnloadingOps);
-		tagcompound.setFloat("WhistleVolume", this.WhistleVolume);
-		tagcompound.setFloat("WhistlePitch", this.WhistlePitch);
-		tagcompound.setLong("ScheduledTime",this.ScheduledTime);
-		tagcompound.setString("LocoLabel", this.LocoLabel);
-	}
-	
-	private void blowWhistle(){
-		String WhistleName="";
-		if(Locomotive.getClass().getName().contains("Ov")){WhistleName="row:whistle_ov";}
-		if(Locomotive.getClass().getName().contains("Yer")){WhistleName="row:whistle_yer";}
-		if(Locomotive.getClass().getName().contains("Cher")){WhistleName="row:whistle_cher";}
-		worldObj.playSound(Locomotive.posX, Locomotive.posY, Locomotive.posZ, WhistleName, WhistleVolume, WhistlePitch, true);
+	private void blowWhistle(Entity locomotive){
+		String whistleName="";
+		if(locomotive.getClass().getName().contains("Ov")){whistleName="row:whistle_ov";}
+		if(locomotive.getClass().getName().contains("Yer")){whistleName="row:whistle_yer";}
+		if(locomotive.getClass().getName().contains("Cher")){whistleName="row:whistle_cher";}
+		worldObj.playSound(locomotive.posX, locomotive.posY, locomotive.posZ, whistleName, whistleVolume, whistlePitch, true);
 	}
 	
 	private void mountEntities(){
-		double testDistance;
-		double shortestDistance;
-		double[] mountingOffset;
-		Entity stock;
-		Entity testEntity;
-		Entity closestEntity;
-		List EntityList;
-		List StockList = getAllNearbyStock("", StationCartRange);
-		AxisAlignedBB LoadingArea;
-		for(int i=0; i<StockList.size(); ++i){
-			stock=(Entity) StockList.get(i);
-			if(stock.riddenByEntity==null && isValidMountingStock(stock, LoadingOps)){
+		List stockList = getAllNearbyStock("", stationCartRange);
+		for(int i=0; i<stockList.size(); ++i){
+			Entity stock=(Entity) stockList.get(i);
+			if(stock.riddenByEntity==null && isValidMountingStock(stock, loadingOps)){
 				if(stock.motionX<1 && stock.motionZ<1){
-					mountingOffset=getMountingOffset(stock, LoadingOps);
+					double[] mountingOffset = getMountingOffset(stock, loadingOps);
+					AxisAlignedBB loadingArea;
 					if(mountingOffset[0]==0){
-						LoadingArea=stock.boundingBox.expand(5, 5, 5);
+						loadingArea=stock.boundingBox.expand(5, 5, 5);
 					}else{
-						LoadingArea=stock.boundingBox.offset(mountingOffset[0], mountingOffset[1], mountingOffset[2]).expand(2, 2, 2);
+						loadingArea=stock.boundingBox.offset(mountingOffset[0], mountingOffset[1], mountingOffset[2]).expand(2, 2, 2);
 					}
-					closestEntity=null;
-					shortestDistance=10;
-					EntityList = this.worldObj.getEntitiesWithinAABBExcludingEntity(stock, LoadingArea);
-					for(int j=0; j<EntityList.size(); ++j){
-						testEntity=(Entity) EntityList.get(j);
-						if(isValidMountingEntity(testEntity, LoadingOps)){
+					double testDistance;
+					double shortestDistance = 10;
+					Entity closestEntity = null;
+					List entityList = this.worldObj.getEntitiesWithinAABBExcludingEntity(stock, loadingArea);
+					for(int j=0; j<entityList.size(); ++j){
+						Entity testEntity = (Entity) entityList.get(j);
+						if(isValidMountingEntity(testEntity, loadingOps)){
 							testDistance=testEntity.getDistanceToEntity(stock);
 							if(testDistance<shortestDistance){
 								closestEntity=testEntity;
@@ -139,19 +94,16 @@ public class TileEntityStation extends TileEntityBase{
 	
 	private void unmountEntities(){
 		double[] mountingOffset;
-		Entity stock;
-		Entity ridingEntity;
-		List StockList = getAllNearbyStock("", StationCartRange);
-		for(int i=0; i<StockList.size(); ++i){
-			stock=(Entity) StockList.get(i);
-			ridingEntity=stock.riddenByEntity;
-			if(stock.motionX<10 && stock.motionZ<10 && ridingEntity!=null){
-				if(isValidMountingStock(stock, UnloadingOps) && isValidMountingEntity(ridingEntity, UnloadingOps)){
-					ridingEntity.yOffset=0.0F;
-					ridingEntity.mountEntity(null);
-					mountingOffset=getMountingOffset(stock, UnloadingOps);
-					ridingEntity.moveEntity(mountingOffset[0], mountingOffset[1], mountingOffset[2]);
-					ridingEntity.fallDistance=0.0F;
+		List stockList = getAllNearbyStock("", stationCartRange);
+		for(int i=0; i<stockList.size(); ++i){
+			Entity stock=(Entity) stockList.get(i);
+			if(stock.motionX<10 && stock.motionZ<10 && stock.riddenByEntity!=null){
+				if(isValidMountingStock(stock, unloadingOps) && isValidMountingEntity(stock.riddenByEntity, unloadingOps)){
+					stock.riddenByEntity.yOffset=0.0F;
+					stock.riddenByEntity.mountEntity(null);
+					mountingOffset=getMountingOffset(stock, unloadingOps);
+					stock.riddenByEntity.moveEntity(mountingOffset[0], mountingOffset[1], mountingOffset[2]);
+					stock.riddenByEntity.fallDistance=0.0F;
 				}
 			}
 		}
@@ -200,5 +152,37 @@ public class TileEntityStation extends TileEntityBase{
     	else{
     		return new double[] {0, -1, 0};
     	}
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound tagcompound){
+		super.readFromNBT(tagcompound);
+	    this.opMode=tagcompound.getInteger("opMode");
+	    this.ticks=tagcompound.getInteger("ticks");
+	    this.tickDelay=tagcompound.getInteger("tickDelay");
+	    this.reverseSet=tagcompound.getInteger("reverseSet");
+	    this.whistleMode=tagcompound.getInteger("whistleMode");
+	    this.loadingOps=tagcompound.getInteger("loadingOps");
+	    this.unloadingOps=tagcompound.getInteger("unloadingOps");
+	    this.whistleVolume=tagcompound.getFloat("whistleVolume");
+	    this.whistlePitch=tagcompound.getFloat("whistlePitch");
+	    this.scheduledTime=tagcompound.getLong("scheduledTime");
+	    this.locoLabel = tagcompound.getString("locoLabel");
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound tagcompound){
+		super.writeToNBT(tagcompound);
+		tagcompound.setInteger("opMode", this.opMode);
+		tagcompound.setInteger("ticks", this.ticks);
+		tagcompound.setInteger("tickDelay", this.tickDelay);
+		tagcompound.setInteger("reverseSet", this.reverseSet);
+		tagcompound.setInteger("whistleMode", this.whistleMode);
+		tagcompound.setInteger("loadingOps", this.loadingOps);
+		tagcompound.setInteger("unloadingOps", this.unloadingOps);
+		tagcompound.setFloat("whistleVolume", this.whistleVolume);
+		tagcompound.setFloat("whistlePitch", this.whistlePitch);
+		tagcompound.setLong("scheduledTime",this.scheduledTime);
+		tagcompound.setString("locoLabel", this.locoLabel);
 	}
 }
