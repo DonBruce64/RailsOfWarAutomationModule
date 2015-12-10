@@ -1,13 +1,12 @@
 package rowautomation.renders;
 
+import net.minecraft.block.Block;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.IBlockAccess;
 import rowautomation.blocks.decorative.BlockCrossingCenter;
 import rowautomation.blocks.decorative.BlockCrossingFull;
 import rowautomation.blocks.decorative.BlockCrossingHalf;
-import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
-import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 
 public class RenderBlockCrossing extends RenderBlockBase{	
 	
@@ -93,11 +92,10 @@ public class RenderBlockCrossing extends RenderBlockBase{
 		}else{
 			return false;
 		}
-		
 		render=rotateRender(render, Math.toRadians(90*(blockMetadata & 3)), numberObjects);	
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorOpaque(255, 255, 255);
-		tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z) -  2097152);
+		tessellator.setBrightness(Math.max(block.getMixedBrightnessForBlock(world, x, y, z) - 2097152, 0));
 		for(int i=0; i<numberObjects; ++i){
 			for(int j=0; j<4; ++j){
 				tessellator.addVertexWithUV(render[i][j][0], render[i][j][1], render[i][j][2], render[i][j][3], render[i][j][4]);

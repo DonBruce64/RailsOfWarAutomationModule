@@ -71,10 +71,14 @@ public abstract class BlockCrossingBase extends Block{
     		return sideIcon;
     	}
 	}	
-	
+    
     @Override
     public boolean isOpaqueCube() {
-            return false;
+    	return false;
+    }
+    
+    public boolean renderAsNormalBlock(){
+        return false;
     }
 	
 	@Override

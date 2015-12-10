@@ -3,7 +3,7 @@
   "modid": "rowaw",
   "name": "Rails of War Automation Module",
   "description": "(Unofficial) Automation and extras for Rails of War.",
-  "version": "5.5.0",
+  "version": "5.5.1",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
