@@ -23,7 +23,7 @@ public class ItemGravelWand extends Item{
 		for(int i=0; i<world.loadedTileEntityList.size(); ++i){
 			TileEntity tile = (TileEntity) world.loadedTileEntityList.get(i);
 			if(tile.getClass().getName().contains("net.row.tileentity.TileEntity")){
-				world.setBlock(tile.xCoord, tile.yCoord - 1 , tile.zCoord, Blocks.grass);
+				world.setBlock(tile.xCoord, tile.yCoord - 1 , tile.zCoord, Blocks.gravel);
 			}
 		}
 		return stack;

@@ -11,7 +11,8 @@ import rowautomation.blocks.decorative.BlockCrossingFull;
 import rowautomation.blocks.decorative.BlockCrossingHalf;
 import rowautomation.blocks.decorative.BlockPlatform;
 import rowautomation.clock.EntityBigClock;
-import rowautomation.clock.ItemBigClock;
+import rowautomation.items.ItemBigClock;
+import rowautomation.items.ItemGravelWand;
 import rowautomation.network.PacketPointer;
 import rowautomation.network.PacketSignal;
 import rowautomation.network.PacketStation;
@@ -50,6 +51,7 @@ public class CommonProxy{
 	
 	private static void initItems(){
 		GameRegistry.registerItem(new ItemBigClock(), "BigClock");
+		GameRegistry.registerItem(new ItemGravelWand(), "GravelWand");
 	}
 	
 	private static void initEntites(){

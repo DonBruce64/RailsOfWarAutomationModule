@@ -63,7 +63,6 @@ public class Chunkloader implements LoadingCallback{
 		if(blockTickets.containsKey(block)){
 			ForgeChunkManager.releaseTicket(blockTickets.get(block));
 			blockTickets.remove(block);
-			System.out.println("REMOVING LOADER");
 		}
 	}
 	

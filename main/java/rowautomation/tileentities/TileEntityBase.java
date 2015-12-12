@@ -5,14 +5,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import rowautomation.Chunkloader;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import rowautomation.Chunkloader;
 
 public class TileEntityBase extends TileEntity{
 	public boolean finishedOperation=false;
@@ -21,7 +20,8 @@ public class TileEntityBase extends TileEntity{
 	public int stationCartRange=25;
 	
 	public Entity getNearbyStock(String stockName, int stockRange){
-		for(Entity stock : Chunkloader.stockList){
+		for(int i=0;i<Chunkloader.stockList.size();++i){
+			Entity stock = Chunkloader.stockList.get(i);
 			if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
 				if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
 					return stock;
@@ -33,7 +33,8 @@ public class TileEntityBase extends TileEntity{
 	
 	public List getAllNearbyStock(String stockName, int stockRange){
 		List stockList = new ArrayList();
-		for(Entity stock : Chunkloader.stockList){
+		for(int i=0;i<Chunkloader.stockList.size();++i){
+			Entity stock = Chunkloader.stockList.get(i);
 			if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
 				if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
 					stockList.add(stock);
@@ -47,8 +48,8 @@ public class TileEntityBase extends TileEntity{
 		Method[] stockMethods = stock.getClass().getMethods();
 		NBTTagCompound stockNBTTag=new NBTTagCompound();
 		for(int i=0;i<stockMethods.length;i++){
-			if(stockMethods[i].getName()=="writeToNBT"){
-			//if(stockMethods[i].getName()=="func_98035_c" || stockMethods[i].getName()=="func_145841_b"){
+			//if(stockMethods[i].getName()=="writeToNBT"){
+			if(stockMethods[i].getName()=="func_98035_c" || stockMethods[i].getName()=="func_145841_b"){
 				try {
 					stockMethods[i].invoke(stock, stockNBTTag);
 					return stockNBTTag;
@@ -69,8 +70,8 @@ public class TileEntityBase extends TileEntity{
 	public void setStockNBT(Object stock, NBTTagCompound stockNBTTag){
 		Method[] stockMethods=stock.getClass().getMethods();
 		for(int i=0;i<stockMethods.length;i++){
-			if(stockMethods[i].getName()=="readFromNBT"){
-			//if(stockMethods[i].getName()=="func_70020_e" || stockMethods[i].getName()=="func_145839_a"){
+			//if(stockMethods[i].getName()=="readFromNBT"){
+			if(stockMethods[i].getName()=="func_70020_e" || stockMethods[i].getName()=="func_145839_a"){
 				try {
 					stockMethods[i].invoke(stock, stockNBTTag);
 				} catch (IllegalArgumentException e) {
