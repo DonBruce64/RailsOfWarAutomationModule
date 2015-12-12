@@ -1,9 +1,11 @@
 package rowautomation;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -23,41 +25,46 @@ import cpw.mods.fml.common.gameevent.TickEvent;
 public class Chunkloader implements LoadingCallback{
 	private Entity stock;
 	private String stockName;
-	private Ticket thisTicket;
 	private Map<Entity, Ticket> stockTickets = Maps.newHashMap();
+	private static Map<Block, Ticket> blockTickets = Maps.newHashMap();
+	public static List<Entity> stockList  = new ArrayList();
 	
 	public void ticketsLoaded(List<Ticket> tickets, World world){
 		for(Ticket modTicket : tickets){
 			if(modTicket.getModId().equals(ROWAM.MODID)){
-				ForgeChunkManager.releaseTicket(modTicket);
+				modTicket.setChunkListDepth(1);
+				if(modTicket.getType().equals(Type.ENTITY)){
+					stockTickets.put(modTicket.getEntity(), modTicket);
+				}else{
+					int[] blockPos = modTicket.getModData().getIntArray("blockPos");
+					ForgeChunkManager.forceChunk(modTicket, new ChunkCoordIntPair((blockPos[0]-16)/16, (blockPos[2]-16)/16));
+					blockTickets.put(world.getBlock(blockPos[0], blockPos[1], blockPos[2]), modTicket);
+				}
 			}
 		}
 	}
 	
-	public void setStockTicket(Entity stock, World world){
-		Ticket ticket=ForgeChunkManager.requestTicket(ROWAM.instance, world, Type.ENTITY);
+	private void setStockTicket(Entity stock, World world){
+		Ticket ticket = ForgeChunkManager.requestTicket(ROWAM.instance, world, Type.ENTITY);
+		ticket.setChunkListDepth(1);
 		ticket.bindEntity(stock);
 		stockTickets.put(stock, ticket);
 	}
 	
-	
-	public void releaseStockTicket(Entity stock){
-		ForgeChunkManager.releaseTicket(stockTickets.get(stock));
-		stockTickets.remove(stock);
+	public static void addBlockTicket(Block block, World world, int x, int y, int z){
+		Ticket blockTicket = ForgeChunkManager.requestTicket(ROWAM.instance, world, Type.NORMAL);
+		blockTicket.setChunkListDepth(1);
+		ForgeChunkManager.forceChunk(blockTicket, new ChunkCoordIntPair((x-16)/16, (z-16)/16));
+		blockTicket.getModData().setIntArray("blockPos", new int[]{x, y, z});		
+		blockTickets.put(block, blockTicket);
 	}
 	
-	public void loadStockChunks(Entity stock){
-		Ticket stockTicket=stockTickets.get(stock);
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX, stock.chunkCoordZ));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX, stock.chunkCoordZ+1));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX, stock.chunkCoordZ-1));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX+1, stock.chunkCoordZ));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX+1, stock.chunkCoordZ+1));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX+1, stock.chunkCoordZ-1));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX-1, stock.chunkCoordZ));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX-1, stock.chunkCoordZ+1));
-		ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stock.chunkCoordX-1, stock.chunkCoordZ-1));
-		stockTickets.put(stock, stockTicket);
+	public static void removeBlockTicket(Block block){
+		if(blockTickets.containsKey(block)){
+			ForgeChunkManager.releaseTicket(blockTickets.get(block));
+			blockTickets.remove(block);
+			System.out.println("REMOVING LOADER");
+		}
 	}
 	
 	@SubscribeEvent
@@ -67,19 +74,34 @@ public class Chunkloader implements LoadingCallback{
 	
 	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent event){
-		if(thisTicket==null){
-			thisTicket=ForgeChunkManager.requestTicket(ROWAM.instance, event.world, Type.NORMAL);
-		}
-		for(Iterator<Entity> stockIterator=event.world.loadedEntityList.iterator(); stockIterator.hasNext();){
-			stock=stockIterator.next();
-			stockName=stock.getClass().getName();
+		stockList.clear();
+		Iterator<Entity> stockIterator = event.world.loadedEntityList.iterator();
+		while(stockIterator.hasNext()){
+			stock = stockIterator.next();
+			stockName = stock.getClass().getName();
 			if(stockName.startsWith("net.row.stock.")){
+				stockList.add(stock);
 				stock.fallDistance=0;
+				
+				if(!event.world.isRemote){
+					if(!stockTickets.containsKey(stock)){
+						setStockTicket(stock, event.world);
+					}else if(stock.isDead){
+						ForgeChunkManager.releaseTicket(stockTickets.get(stock));
+						stockTickets.remove(stock);
+					}else{
+						Ticket stockTicket = stockTickets.get(stock);
+						ForgeChunkManager.forceChunk(stockTicket, new ChunkCoordIntPair(stockTicket.getEntity().chunkCoordX, stockTicket.getEntity().chunkCoordZ));
+						stockTickets.put(stock, stockTicket);
+					}
+				}
+				
 				if(!stockName.equals("net.row.stock.cart.CartNT")){
 					if(stock.timeUntilPortal>0){
 						stock.timeUntilPortal=Math.max(stock.timeUntilPortal-5, 0);
 					}
 				}	
+				
 				if(stock.riddenByEntity!=null){
 					if(!(stock.riddenByEntity instanceof EntityPlayer)){
 						stock.riddenByEntity.motionY=0;	
@@ -89,13 +111,6 @@ public class Chunkloader implements LoadingCallback{
 							stock.riddenByEntity.yOffset=-0.45F;
 						}
 					}
-				}
-				if(!event.world.isRemote){
-					if(stockTickets.containsKey(stock)){
-						releaseStockTicket(stock);
-					}
-					setStockTicket(stock, event.world);
-					loadStockChunks(stock);
 				}
 			}
 		}

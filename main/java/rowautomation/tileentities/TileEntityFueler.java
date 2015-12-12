@@ -8,6 +8,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class TileEntityFueler extends TileEntityBase{
 	private int transferCooldown=0;
@@ -18,7 +19,6 @@ public class TileEntityFueler extends TileEntityBase{
 		Entity stock = getFuelableStock();
 		if(stock==null){return;}
 		NBTTagCompound stockNBT = getStockNBT(stock);
-		if(stockNBT==null){return;}
 		int currentFuel = stockNBT.getInteger("fuel");
 		int maxFuel = 0;
 		boolean tender = false;
@@ -66,6 +66,7 @@ public class TileEntityFueler extends TileEntityBase{
 	
 	private TileEntityChest getNearbyChest(){
 		///if(IFluidHandler.class.isAssignableFrom(testTileEntity.getClass())){
+		//IFluidHandler tankContainer = (IFluidHandler) testTileEntity;
 		for(int i=0;i<6;++i){
 			ForgeDirection direction = ForgeDirection.getOrientation(i);
 			TileEntity tile = worldObj.getTileEntity(xCoord+direction.offsetX, yCoord+direction.offsetY, zCoord+direction.offsetZ);

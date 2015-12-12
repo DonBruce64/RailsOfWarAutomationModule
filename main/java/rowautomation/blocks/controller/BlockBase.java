@@ -7,10 +7,10 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
-import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
+import rowautomation.Chunkloader;
 import rowautomation.ROWAM;
 import rowautomation.tileentities.TileEntityBase;
 import cpw.mods.fml.relauncher.Side;
@@ -23,6 +23,17 @@ public class BlockBase extends BlockContainer implements ITileEntityProvider{
 		super(Material.rock);
 		this.blockHardness=-1;
 		this.setCreativeTab(ROWAM.tabROWAM);
+	}
+	
+	@Override
+	public void onBlockAdded(World world, int x, int y, int z){
+		super.onBlockAdded(world, x, y, z);
+		Chunkloader.addBlockTicket(this, world, x, y, z);
+	}
+	
+	@Override
+	public void onBlockDestroyedByPlayer(World world, int x, int y, int z, int meta){
+		Chunkloader.removeBlockTicket(this);
 	}
 	
 	@Override
