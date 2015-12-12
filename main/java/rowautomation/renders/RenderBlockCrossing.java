@@ -95,7 +95,7 @@ public class RenderBlockCrossing extends RenderBlockBase{
 		render=rotateRender(render, Math.toRadians(90*(blockMetadata & 3)), numberObjects);	
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorOpaque(255, 255, 255);
-		tessellator.setBrightness(Math.max(block.getMixedBrightnessForBlock(world, x, y, z) - 2097152, 0));
+		tessellator.setBrightness(Math.max(block.getMixedBrightnessForBlock(world, x, y, z) - 2097152, 1048576));
 		for(int i=0; i<numberObjects; ++i){
 			for(int j=0; j<4; ++j){
 				tessellator.addVertexWithUV(render[i][j][0], render[i][j][1], render[i][j][2], render[i][j][3], render[i][j][4]);
