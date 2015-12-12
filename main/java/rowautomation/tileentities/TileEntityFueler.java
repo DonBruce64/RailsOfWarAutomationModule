@@ -3,12 +3,11 @@ package rowautomation.tileentities;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityChest;
 import net.minecraftforge.common.util.ForgeDirection;
-import net.minecraftforge.fluids.IFluidHandler;
 
 public class TileEntityFueler extends TileEntityBase{
 	private int transferCooldown=0;
@@ -34,7 +33,7 @@ public class TileEntityFueler extends TileEntityBase{
 		if(getBlockMetadata()==0){//not in creative mode
 			if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
 			if(currentFuel+80>maxFuel){return;}
-			TileEntityChest chest = getNearbyChest();
+			IInventory chest = getNearbyChest();
 			if(chest==null){return;}
 			for(int i=0;i<chest.getSizeInventory();i++){
 				ItemStack chestItemStack = chest.getStackInSlot(i);
@@ -64,14 +63,14 @@ public class TileEntityFueler extends TileEntityBase{
 		return stock;
 	}
 	
-	private TileEntityChest getNearbyChest(){
-		///if(IFluidHandler.class.isAssignableFrom(testTileEntity.getClass())){
-		//IFluidHandler tankContainer = (IFluidHandler) testTileEntity;
+	private IInventory getNearbyChest(){
 		for(int i=0;i<6;++i){
 			ForgeDirection direction = ForgeDirection.getOrientation(i);
 			TileEntity tile = worldObj.getTileEntity(xCoord+direction.offsetX, yCoord+direction.offsetY, zCoord+direction.offsetZ);
-			if(tile instanceof TileEntityChest){
-				return (TileEntityChest) tile;
+			if(tile != null){
+				if(IInventory.class.isAssignableFrom(tile.getClass())){
+					return (IInventory) tile;
+				}
 			}
 		}
 		return null;
