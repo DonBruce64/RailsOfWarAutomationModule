@@ -37,8 +37,12 @@ public class Chunkloader implements LoadingCallback{
 					stockTickets.put(modTicket.getEntity(), modTicket);
 				}else{
 					int[] blockPos = modTicket.getModData().getIntArray("blockPos");
-					ForgeChunkManager.forceChunk(modTicket, new ChunkCoordIntPair((blockPos[0]-16)/16, (blockPos[2]-16)/16));
-					blockTickets.put(world.getBlock(blockPos[0], blockPos[1], blockPos[2]), modTicket);
+					if(blockPos.length != 0){
+						ForgeChunkManager.forceChunk(modTicket, new ChunkCoordIntPair((blockPos[0]-16)/16, (blockPos[2]-16)/16));//
+						blockTickets.put(world.getBlock(blockPos[0], blockPos[1], blockPos[2]), modTicket);
+					}else{
+						ForgeChunkManager.releaseTicket(modTicket);
+					}
 				}
 			}
 		}
