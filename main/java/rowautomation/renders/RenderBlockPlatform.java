@@ -41,12 +41,12 @@ public class RenderBlockPlatform extends RenderBlockBase{
 			{{1,yMin,0.375,sideu,vMax},{1,yMax,0.375,sideu,sidev},{1,yMax,1,uPartial,sidev},{1,yMin,1,uPartial,vMax}},
 			{{0,0,1,sideu,sideV},{0,0,0.375,sideu,sidev},{1,0,0.375,sideU,sideV},{1,0,1,sideU,vMax}}
 			};
-		
+
 		render = rotateRender(render, Math.toRadians(90*(metadata%4)-90), 6);
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorOpaque(255, 255, 255);
 		for(int i=0; i<5; ++i){
-			tessellator.setBrightness(i != 0 ? Math.max(block.getMixedBrightnessForBlock(world, x, y, z) - 3145728, 1048576) : block.getMixedBrightnessForBlock(world, x, y, z));
+			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x+attachedBlockXOffset, y+attachedBlockYOffset, z+attachedBlockZOffset));
 			for(int j=0; j<4; ++j){
 				tessellator.addVertexWithUV(render[i][j][0], render[i][j][1], render[i][j][2], render[i][j][3], render[i][j][4]);
 			}
