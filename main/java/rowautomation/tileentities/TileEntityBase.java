@@ -22,9 +22,11 @@ public class TileEntityBase extends TileEntity{
 	public Entity getNearbyStock(String stockName, int stockRange){
 		for(int i=0;i<Chunkloader.stockList.size();++i){
 			Entity stock = Chunkloader.stockList.get(i);
-			if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
-				if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
-					return stock;
+			if(stock != null){
+				if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
+					if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
+						return stock;
+					}
 				}
 			}
 		}
@@ -35,9 +37,11 @@ public class TileEntityBase extends TileEntity{
 		List stockList = new ArrayList();
 		for(int i=0;i<Chunkloader.stockList.size();++i){
 			Entity stock = Chunkloader.stockList.get(i);
-			if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
-				if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
-					stockList.add(stock);
+			if(stock != null){
+				if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
+					if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
+						stockList.add(stock);
+					}
 				}
 			}
 		}
