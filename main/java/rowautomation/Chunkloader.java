@@ -1,7 +1,6 @@
 package rowautomation;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -20,7 +19,6 @@ import com.google.common.collect.Maps;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.TickEvent;
-
 
 public class Chunkloader implements LoadingCallback{
 	private Entity stock;
@@ -78,9 +76,8 @@ public class Chunkloader implements LoadingCallback{
 	@SubscribeEvent
 	public void onWorldTick(TickEvent.WorldTickEvent event){
 		stockList.clear();
-		Iterator<Entity> stockIterator = event.world.loadedEntityList.iterator();
-		while(stockIterator.hasNext()){
-			stock = stockIterator.next();
+		for(int i=0; i<event.world.loadedEntityList.size(); ++i){
+			stock = (Entity) event.world.loadedEntityList.get(i);
 			stockName = stock.getClass().getName();
 			if(stockName.startsWith("net.row.stock.")){
 				stockList.add(stock);
