@@ -1,9 +1,9 @@
 [
 {
-  "modid": "rowaw",
+  "modid": "rowam",
   "name": "Rails of War Automation Module",
   "description": "(Unofficial) Automation and extras for Rails of War.",
-  "version": "6.0.3",
+  "version": "6.0.5",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",

@@ -46,7 +46,7 @@ public class RenderBlockPlatform extends RenderBlockBase{
 		tessellator.addTranslation(x, y, z);
 		tessellator.setColorOpaque(255, 255, 255);
 		for(int i=0; i<5; ++i){
-			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x+attachedBlockXOffset, y+attachedBlockYOffset, z+attachedBlockZOffset));
+			tessellator.setBrightness(block.getMixedBrightnessForBlock(world, x, y, z));
 			for(int j=0; j<4; ++j){
 				tessellator.addVertexWithUV(render[i][j][0], render[i][j][1], render[i][j][2], render[i][j][3], render[i][j][4]);
 			}
