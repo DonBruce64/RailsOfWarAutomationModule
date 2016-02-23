@@ -1,8 +1,8 @@
 package rowautomation.tileentities;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
+import net.row.stock.core.RoWLocomotive;
+import net.row.tileentity.TileEntityTrackNormal;
 
 public class TileEntityPointer extends TileEntityBase{
 	public Boolean locked=true;
@@ -29,17 +29,13 @@ public class TileEntityPointer extends TileEntityBase{
 			return;
 		}
 		if(locoLabel==""){return;}
-		Entity locomotive=getNearbyStock("loco",range);
-		if(locomotive==null){return;}
-		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
-		if(locomotiveNBT==null){return;}
-		if(locomotiveNBT.getString("label").equals(this.locoLabel) && !(locomotiveNBT.getBoolean("switched")==this.switched)){
-			locomotiveNBT.setBoolean("switched", this.switched);
-			setStockNBT(locomotive, locomotiveNBT);
+		RoWLocomotive loco = (RoWLocomotive) getNearbyStock(RoWLocomotive.class,range);
+		if(loco==null){return;}
+		if(loco.label.equals(this.locoLabel) && !(loco.onActiveSwitch==this.switched)){
+			loco.onActiveSwitch = this.switched;
 		}
-		if(!locomotiveNBT.getString("label").equals(this.locoLabel) && locomotiveNBT.getBoolean("switched")==this.switched && locked){
-			locomotiveNBT.setBoolean("switched", !this.switched);
-			setStockNBT(locomotive, locomotiveNBT);
+		if(!loco.label.equals(this.locoLabel) && loco.onActiveSwitch==this.switched && locked){
+			loco.onActiveSwitch = !this.switched;
 		}
 	}
 	
@@ -66,21 +62,14 @@ public class TileEntityPointer extends TileEntityBase{
 	
 	private void changePointer(boolean switchStatus){
 		for(int i=0;i<worldObj.loadedTileEntityList.size();++i){
-			if(worldObj.loadedTileEntityList.get(i).getClass().getName().equals("net.row.tileentity.TileEntityTrackNormal")){
-				TileEntity track=(TileEntity) worldObj.loadedTileEntityList.get(i);
-				NBTTagCompound trackNBTTag=getStockNBT(track);
+			if(worldObj.loadedTileEntityList.get(i) instanceof TileEntityTrackNormal){
+				TileEntityTrackNormal track=(TileEntityTrackNormal) worldObj.loadedTileEntityList.get(i);
 				if(Math.abs(track.xCoord-this.xCoord)<=range && Math.abs(track.yCoord-this.yCoord)<=range && Math.abs(track.zCoord-this.zCoord)<=range){
-					int mid=trackNBTTag.getInteger("mid");
-					if((mid>=15 && mid<=20)||(mid>=27 && mid <=32)){
-						if(!trackNBTTag.getBoolean("act") && switchStatus){
-							trackNBTTag.setBoolean("act",true);
-							setStockNBT(track,trackNBTTag);
-							return;
-						}
-						if(trackNBTTag.getBoolean("act") && !switchStatus){
-							trackNBTTag.setBoolean("act",false);
-							setStockNBT(track,trackNBTTag);
-							return;
+					if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
+						if(!track.activated && switchStatus){
+							track.activated = true;
+						}else if(track.activated && !switchStatus){
+							track.activated = false;
 						}
 					}					
 				}

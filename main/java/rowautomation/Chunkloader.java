@@ -6,7 +6,6 @@ import java.util.Map;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeChunkManager;
@@ -14,6 +13,7 @@ import net.minecraftforge.common.ForgeChunkManager.LoadingCallback;
 import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.event.world.WorldEvent;
+import net.row.stock.core.RoWRollingStock;
 
 import com.google.common.collect.Maps;
 
@@ -78,11 +78,8 @@ public class Chunkloader implements LoadingCallback{
 		stockList.clear();
 		for(int i=0; i<event.world.loadedEntityList.size(); ++i){
 			stock = (Entity) event.world.loadedEntityList.get(i);
-			stockName = stock.getClass().getName();
-			if(stockName.startsWith("net.row.stock.")){
-				stockList.add(stock);
-				stock.fallDistance=0;
-				
+			if(stock instanceof RoWRollingStock){
+				stockList.add(stock);				
 				if(!event.world.isRemote){
 					if(!stockTickets.containsKey(stock)){
 						setStockTicket(stock, event.world);
@@ -95,32 +92,6 @@ public class Chunkloader implements LoadingCallback{
 						stockTickets.put(stock, stockTicket);
 					}
 				}
-				
-				if(!stockName.equals("net.row.stock.cart.CartNT")){
-					if(stock.timeUntilPortal>0){
-						stock.timeUntilPortal=Math.max(stock.timeUntilPortal-5, 0);
-					}
-				}	
-				
-				if(stock.riddenByEntity!=null){
-					if(!(stock.riddenByEntity instanceof EntityPlayer)){
-						stock.riddenByEntity.motionY=0;	
-						if(stockName.contains("cart")){
-							stock.riddenByEntity.yOffset=0.6F;
-						}else if(stockName.contains("loco")){
-							stock.riddenByEntity.yOffset=-0.45F;
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	@SubscribeEvent
-	public void onPlayerTick(TickEvent.PlayerTickEvent event){
-		if(event.player.ridingEntity != null && event.player.worldObj.isRemote){
-			if(event.player.ridingEntity.getClass().getName().startsWith("net.row.stock.")){
-				event.player.rotationYaw += (event.player.ridingEntity.rotationYaw-event.player.ridingEntity.prevRotationYaw)/2;
 			}
 		}
 	}

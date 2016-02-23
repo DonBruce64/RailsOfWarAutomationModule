@@ -5,6 +5,10 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.row.stock.cart.CartIII2L12;
+import net.row.stock.cart.CartNTV;
+import net.row.stock.core.RoWLocomotive;
+import net.row.stock.core.RoWRollingStock;
 
 public class TileEntityStation extends TileEntityBase{
 	public int opMode=1;
@@ -22,15 +26,14 @@ public class TileEntityStation extends TileEntityBase{
 	@Override
 	public void updateEntity(){
 		changeOpStatus(false);
-		Entity locomotive=getNearbyStock("loco", range);
+		RoWLocomotive locomotive = (RoWLocomotive) getNearbyStock(RoWLocomotive.class, range);
 		if(locomotive==null){return;}
-		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
-		if(!(locomotiveNBT.getInteger("reverse")==0)){return;}
-		if(!this.locoLabel.equals("") && !locomotiveNBT.getString("label").equals(this.locoLabel)){return;}
+		
+		if(locomotive.reverse != 0){return;}
+		if(!this.locoLabel.equals("") && !locomotive.label.equals(this.locoLabel)){return;}
 		changeOpStatus(true);
-		if(locomotiveNBT.getBoolean("brake")==false){
-			locomotiveNBT.setBoolean("brake",true);
-			setStockNBT(locomotive, locomotiveNBT);
+		if(!locomotive.isBrakeOn){
+			locomotive.isBrakeOn = true;
 			unmountEntities();
 			if(whistleMode==2 || whistleMode==4){blowWhistle(locomotive);}
 		}
@@ -40,9 +43,9 @@ public class TileEntityStation extends TileEntityBase{
 		}
 		if(opMode==2 && (worldObj.getWorldTime()%24000) != scheduledTime){return;}
 		if(opMode==3 && (this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)==0)){return;}
-		locomotiveNBT.setInteger("reverse", reverseSet);
-		locomotiveNBT.setBoolean("brake",false);
-		setStockNBT(locomotive, locomotiveNBT);
+		
+		locomotive.reverse = reverseSet;
+		locomotive.isBrakeOn = false;
 		mountEntities();
 		if(whistleMode==3 || whistleMode==4){blowWhistle(locomotive);}
 		changeOpStatus(false);
@@ -58,7 +61,7 @@ public class TileEntityStation extends TileEntityBase{
 	}
 	
 	private void mountEntities(){
-		List stockList = getAllNearbyStock("", stationCartRange);
+		List stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
 		for(int i=0; i<stockList.size(); ++i){
 			Entity stock=(Entity) stockList.get(i);
 			if(stock.riddenByEntity==null && isValidMountingStock(stock, loadingOps)){
@@ -94,7 +97,7 @@ public class TileEntityStation extends TileEntityBase{
 	
 	private void unmountEntities(){
 		double[] mountingOffset;
-		List stockList = getAllNearbyStock("", stationCartRange);
+		List stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
 		for(int i=0; i<stockList.size(); ++i){
 			Entity stock=(Entity) stockList.get(i);
 			if(stock.motionX<10 && stock.motionZ<10 && stock.riddenByEntity!=null){
@@ -128,17 +131,16 @@ public class TileEntityStation extends TileEntityBase{
 	
 	private boolean isValidMountingStock(Entity stock, int ops){
     	if(ops%100>=30){
-    		if(stock.getClass().getName().contains("loco")){return true;}
+    		return stock instanceof RoWLocomotive;
     	}else if(ops%100>=20){
-    		if(stock.getClass().getName().contains("CartIII")){return true;}
+    		return stock instanceof CartIII2L12;
     	}else if(ops%100>=10){
-    		if(stock.getClass().getName().contains("NTV")){return true;}
+    		return stock instanceof CartNTV;
     	}else if(ops%100>=0){
-    		if(stock.getClass().getName().contains("loco")){return true;}
-    		if(stock.getClass().getName().contains("CartIII")){return true;}
-    		if(stock.getClass().getName().contains("NTV")){return true;}
+    		return stock instanceof RoWLocomotive || stock instanceof CartIII2L12 || stock instanceof CartNTV;
+    	}else{
+    		return false;
     	}
-    	return false;
 	}
 	
 	private double[] getMountingOffset(Entity stock, int ops){

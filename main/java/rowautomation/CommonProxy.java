@@ -6,13 +6,6 @@ import rowautomation.blocks.controller.BlockPointer;
 import rowautomation.blocks.controller.BlockSignal;
 import rowautomation.blocks.controller.BlockStation;
 import rowautomation.blocks.controller.BlockTank;
-import rowautomation.blocks.decorative.BlockCrossingCenter;
-import rowautomation.blocks.decorative.BlockCrossingFull;
-import rowautomation.blocks.decorative.BlockCrossingHalf;
-import rowautomation.blocks.decorative.BlockPlatform;
-import rowautomation.clock.EntityBigClock;
-import rowautomation.items.ItemBigClock;
-import rowautomation.items.ItemGravelWand;
 import rowautomation.network.PacketPointer;
 import rowautomation.network.PacketSignal;
 import rowautomation.network.PacketStation;
@@ -22,15 +15,12 @@ import rowautomation.tileentities.TileEntityPointer;
 import rowautomation.tileentities.TileEntitySignal;
 import rowautomation.tileentities.TileEntityStation;
 import rowautomation.tileentities.TileEntityTank;
-import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 public class CommonProxy{
 	public void init(){
 		initBlocks();
-		initItems();
-		initEntites();
 		initTileEntities();
 		initPackets();
 	}
@@ -42,22 +32,8 @@ public class CommonProxy{
 	    GameRegistry.registerBlock(new BlockTank(), "TankBlock");
 	    GameRegistry.registerBlock(new BlockFueler(), "FuelingBlock");
 	    GameRegistry.registerBlock(new BlockDetector(), "DetectorBlock");
-	    
-	    GameRegistry.registerBlock(new BlockCrossingFull(), "FullCrossingBlock");
-	    GameRegistry.registerBlock(new BlockCrossingHalf(), "HalfCrossingBlock");
-	    GameRegistry.registerBlock(new BlockCrossingCenter(), "CenterCrossingBlock");
-	    GameRegistry.registerBlock(new BlockPlatform(), "PlatformBlock");
 	}
-	
-	private static void initItems(){
-		GameRegistry.registerItem(new ItemBigClock(), "BigClock");
-		GameRegistry.registerItem(new ItemGravelWand(), "GravelWand");
-	}
-	
-	private static void initEntites(){
-		EntityRegistry.registerModEntity(EntityBigClock.class, "BigClock", 0, ROWAM.MODID, 160, Integer.MAX_VALUE, false);
-	}
-	
+
 	private static void initTileEntities(){
 	    GameRegistry.registerTileEntity(TileEntitySignal.class,"SignalTileEntity");
 	    GameRegistry.registerTileEntity(TileEntityStation.class,"StationTileEntity");

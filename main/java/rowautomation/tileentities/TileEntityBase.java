@@ -1,8 +1,5 @@
 package rowautomation.tileentities;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -11,7 +8,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import rowautomation.Chunkloader;
 
 public class TileEntityBase extends TileEntity{
 	public boolean finishedOperation=false;
@@ -19,76 +15,18 @@ public class TileEntityBase extends TileEntity{
 	public int detectorRange=6;
 	public int stationCartRange=25;
 	
-	public Entity getNearbyStock(String stockName, int stockRange){
-		for(int i=0;i<Chunkloader.stockList.size();++i){
-			Entity stock = Chunkloader.stockList.get(i);
-			if(stock != null){
-				if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
-					if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
-						return stock;
-					}
-				}
-			}
-		}
-		return null;
-	}
-	
-	public List getAllNearbyStock(String stockName, int stockRange){
-		List stockList = new ArrayList();
-		for(int i=0;i<Chunkloader.stockList.size();++i){
-			Entity stock = Chunkloader.stockList.get(i);
-			if(stock != null){
-				if(stock.getClass().getName().startsWith("net.row.stock."+stockName)){
-					if(Math.abs(stock.posX-this.xCoord)<stockRange && Math.abs(stock.posY-this.yCoord)<stockRange && Math.abs(stock.posZ-this.zCoord)<stockRange){
-						stockList.add(stock);
-					}
-				}
-			}
-		}
-		return stockList;
-	}
-	
-	public NBTTagCompound getStockNBT(Object stock){
-		Method[] stockMethods = stock.getClass().getMethods();
-		NBTTagCompound stockNBTTag=new NBTTagCompound();
-		for(int i=0;i<stockMethods.length;i++){
-			//if(stockMethods[i].getName()=="writeToNBT"){
-			if(stockMethods[i].getName()=="func_98035_c" || stockMethods[i].getName()=="func_145841_b"){
-				try {
-					stockMethods[i].invoke(stock, stockNBTTag);
-					return stockNBTTag;
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return null;
-	}
-	
-	
-	
-	public void setStockNBT(Object stock, NBTTagCompound stockNBTTag){
-		Method[] stockMethods=stock.getClass().getMethods();
-		for(int i=0;i<stockMethods.length;i++){
-			//if(stockMethods[i].getName()=="readFromNBT"){
-			if(stockMethods[i].getName()=="func_70020_e" || stockMethods[i].getName()=="func_145839_a"){
-				try {
-					stockMethods[i].invoke(stock, stockNBTTag);
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
-			}
+	public Entity getNearbyStock(Class stockClass, int stockRange){
+		List<Entity> entityList = getAllNearbyStock(stockClass, stockRange);
+		if(entityList.size() > 0){
+			return entityList.get(0);
+		}else{
+			return null;
 		}
 	}
 	
+	public List getAllNearbyStock(Class stockClass, int stockRange){
+		return this.worldObj.getEntitiesWithinAABB(stockClass, this.getRenderBoundingBox().expand(range, range, range));
+	}
 	
 	public void changeOpStatus(boolean setStatus){
 		if(setStatus){

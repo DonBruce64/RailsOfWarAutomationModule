@@ -1,7 +1,7 @@
 package rowautomation.tileentities;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
+import net.row.stock.core.RoWLocomotive;
 
 public class TileEntitySignal extends TileEntityBase{
 	public int reverseMax=999;
@@ -19,35 +19,25 @@ public class TileEntitySignal extends TileEntityBase{
 		}
 		changeOpStatus(false);
 		if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
-		Entity locomotive=getNearbyStock("loco",range);
+		RoWLocomotive locomotive = (RoWLocomotive) getNearbyStock(RoWLocomotive.class,range);
 		if(locomotive==null){return;}
-		NBTTagCompound locomotiveNBT=getStockNBT(locomotive);
-		if(locomotiveNBT==null){return;}
-		int currentReverse = locomotiveNBT.getInteger("reverse");
-		if(!this.locoLabel.equals("") && !locomotiveNBT.getString("label").equals(this.locoLabel)){return;}
-		if(Math.abs(currentReverse)>reverseMax){
-			if(Math.abs(currentReverse)!=Math.abs(reverseSetMax)){
-				locomotiveNBT.setInteger("reverse", sign(currentReverse)*reverseSetMax);
-				setStockNBT(locomotive, locomotiveNBT);
+		if(!this.locoLabel.equals("") && !locomotive.label.equals(this.locoLabel)){return;}
+		if(Math.abs(locomotive.reverse)>reverseMax){
+			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMax)){
+				locomotive.reverse =  getSign(locomotive.reverse)*reverseSetMax;
 				changeOpStatus(true);
 				cooldown=10;
 			}
-		}else if(Math.abs(currentReverse)<reverseMin){
-			if(Math.abs(currentReverse)!=Math.abs(reverseSetMin)){
-				locomotiveNBT.setInteger("reverse", sign(currentReverse)*reverseSetMin);
-				setStockNBT(locomotive, locomotiveNBT);
-				changeOpStatus(true);
+		}else if(Math.abs(locomotive.reverse)<reverseMin){
+			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMin)){
+				locomotive.reverse = getSign(locomotive.reverse)*reverseSetMin;
 				cooldown=10;
 			}
 		}
 	}
 	
-	int sign(int i) {
-		if (i < 0){
-			return -1;
-	    }else{
-	    	return 1;
-		}
+	private int getSign(int i){
+		return i < 0 ? -1 : 1;
 	}
 	
 	@Override

@@ -17,11 +17,11 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-@Mod(modid = ROWAM.MODID, name = ROWAM.MODNAME, version = ROWAM.MODVER)
+@Mod(modid = ROWAM.MODID, name = ROWAM.MODNAME, version = ROWAM.MODVER,  dependencies = "required-after:row")
 public class ROWAM{
 	public static final String MODID="rowam";
 	public static final String MODNAME="Rails of War Automation Module";
-	public static final String MODVER="6.0.5";
+	public static final String MODVER="7.0.0";
 	
 	public static final Chunkloader chunkLoader = new Chunkloader();
 	public static final SimpleNetworkWrapper ROWAMNet = NetworkRegistry.INSTANCE.newSimpleChannel("ROWAMNet");

@@ -77,7 +77,7 @@ public class BlockBase extends BlockContainer implements ITileEntityProvider{
     	if(par1==0 || par1==1){
     		return this.IconMap.get("EndIcon");
     	}else{
-    		return this.IconMap.get(this.getUnlocalizedName().replace("tile.", ""));
+    		return this.IconMap.get(this.getUnlocalizedName().substring(5));
     	}
 	}	
 }

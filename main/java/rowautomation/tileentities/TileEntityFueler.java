@@ -1,13 +1,14 @@
 package rowautomation.tileentities;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.item.EntityItem;
-import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
+import net.row.registry.RoWConfig;
+import net.row.stock.core.RoWLocomotive;
+import net.row.stock.core.RoWRollingStock;
+import net.row.stock.tender.TenderBase;
 
 public class TileEntityFueler extends TileEntityBase{
 	private int transferCooldown=0;
@@ -15,50 +16,38 @@ public class TileEntityFueler extends TileEntityBase{
 	@Override
 	public void updateEntity(){
 		changeOpStatus(false);
-		Entity stock = getFuelableStock();
+		RoWRollingStock stock = (RoWRollingStock) getFuelableStock();
 		if(stock==null){return;}
-		NBTTagCompound stockNBT = getStockNBT(stock);
-		int currentFuel = stockNBT.getInteger("fuel");
-		int maxFuel = 0;
-		boolean tender = false;
-		if(stock.getClass().getName().equals("net.row.stock.tender.TenderOv")){
-			maxFuel=5735;
-			tender=true;
-		}else{
-			if(stock.getClass().getName().equals("net.row.stock.loco.LocoCherepanov")){maxFuel=2500;}
-			if(stock.getClass().getName().equals("net.row.stock.loco.LocoYer")){maxFuel=10000;}
-			if(stock.getClass().getName().equals("net.row.stock.loco.LocoOv")){maxFuel=5000;}
-		}
-		++transferCooldown;
-		if(getBlockMetadata()==0){//not in creative mode
-			if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
-			if(currentFuel+80>maxFuel){return;}
-			IInventory chest = getNearbyChest();
-			if(chest==null){return;}
-			for(int i=0;i<chest.getSizeInventory();i++){
-				ItemStack chestItemStack = chest.getStackInSlot(i);
-				if(chestItemStack==null){continue;}
-				if(chestItemStack.getItem().getClass().equals(net.minecraft.item.ItemCoal.class)){
-					changeOpStatus(true);
-					if(transferCooldown>8){
-						transferCooldown=0;
-						chestItemStack=chest.decrStackSize(i, 1);
-						fuelStock(false, tender, stock, stockNBT, maxFuel, currentFuel);
+		if(stock.fuel + RoWConfig.fuelValue < stock.maxFuel){
+			if(getBlockMetadata()==0){//not in creative mode
+				if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
+				IInventory chest = getNearbyChest();
+				if(chest==null){return;}
+				for(int i=0;i<chest.getSizeInventory();i++){
+					ItemStack chestItemStack = chest.getStackInSlot(i);
+					if(chestItemStack==null){continue;}
+					if(chestItemStack.getItem().getClass().equals(net.minecraft.item.ItemCoal.class)){
+						changeOpStatus(true);
+						if(transferCooldown>8){
+							transferCooldown=0;
+							chestItemStack=chest.decrStackSize(i, 1);
+							stock.fuel += RoWConfig.fuelValue;
+						}else{
+							++transferCooldown;
+						}
+						break;
 					}
-					break;
 				}
+			}else{
+				stock.fuel = stock.maxFuel;
 			}
-		}else{
-			if(tender && transferCooldown<8){return;}
-			transferCooldown=0;
-			fuelStock(true, tender, stock, stockNBT, maxFuel, currentFuel);
 		}
 	}
 	
 	public Entity getFuelableStock(){
-		Entity stock=getNearbyStock("loco",range);
+		Entity stock=getNearbyStock(RoWLocomotive.class, range);
 		if(stock==null){
-			stock=getNearbyStock("tender",range);
+			stock=getNearbyStock(TenderBase.class, range);
 		}
 		return stock;
 	}
@@ -74,14 +63,5 @@ public class TileEntityFueler extends TileEntityBase{
 			}
 		}
 		return null;
-	}
-	
-	private void fuelStock(boolean creative, boolean tender, Entity stock, NBTTagCompound stockNBT, int maxFuel, int currentFuel){
-		if(tender){
-			this.worldObj.spawnEntityInWorld(new EntityItem(this.worldObj, stock.posX, stock.posY+3, stock.posZ, new ItemStack(Items.coal, creative ? (maxFuel-currentFuel)/10 : 8)));			
-		}else{
-			stockNBT.setInteger("fuel", creative ? maxFuel : currentFuel+80);
-			setStockNBT(stock, stockNBT);
-		}
 	}
 }

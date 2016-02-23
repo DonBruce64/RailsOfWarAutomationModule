@@ -1,19 +1,21 @@
 package rowautomation.tileentities;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.IFluidHandler;
+import net.row.RoW;
+import net.row.network.PacketFuel;
+import net.row.stock.cart.CartNT;
 
 public class TileEntityTank extends TileEntityBase{
 	public boolean drain=true;
 
 	@Override
 	public void updateEntity(){
+		if(worldObj.isRemote){return;}
 		if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
 		boolean foundTank = false;
 		changeOpStatus(false);
@@ -23,63 +25,62 @@ public class TileEntityTank extends TileEntityBase{
 			if(testTileEntity!=null){
 				if(IFluidHandler.class.isAssignableFrom(testTileEntity.getClass())){
 					IFluidHandler tankContainer = (IFluidHandler) testTileEntity;
-					Entity tankCart = getNearbyStock("cart.CartNT", range);
+					CartNT tankCart = (CartNT) getNearbyStock(CartNT.class, range);
 					if(tankCart==null){return;}
-					NBTTagCompound tankCartNBT = this.getStockNBT(tankCart);
-					int tankCartAmount = tankCartNBT.getInteger("PortalCooldown");
-					int tankCartFluidColor = tankCartNBT.getInteger("colour");
-					FluidStack tankCartFluid = getTankCartFluid(tankCartFluidColor, tankCartAmount);
-					if(this.drain){//drain tank cart
-						if(tankCartAmount==0 || tankCartFluid==null){return;}
-						if(tankContainer.canFill(tankDirection.getOpposite(), tankCartFluid.getFluid())){
-							tankContainer.fill(tankDirection.getOpposite(), tankCartFluid, true);
-							tankCartNBT.setInteger("PortalCooldown", tankCartAmount-tankCartFluid.amount);
+					
+					if(this.drain){//drain tank cart					
+						if(tankCart.fuel==0){return;}
+						FluidStack fluidToDrain = new FluidStack(tankCart.fuelType,  Math.min(tankCart.fuel, 100));
+						if(tankContainer.canFill(tankDirection.getOpposite(), fluidToDrain.getFluid())){
+							tankContainer.fill(tankDirection.getOpposite(), fluidToDrain, true);
+							tankCart.fuel -= fluidToDrain.amount;
 						}else{
 							return;
 						}
 					}else{//fill tank cart
-						if(tankCartAmount>=96000){return;}
-						if(tankCartFluid==null){//empty tank cart
-							tankCartFluid=tankContainer.drain(tankDirection.getOpposite(), 1, false);
-							if(tankCartFluid==null){return;}
-							tankCartFluidColor=getFluidColor(tankCartFluid);
-							if(tankCartFluidColor==0){return;}
-							tankCartNBT.setInteger("colour",tankCartFluidColor);
+						if(tankCart.fuel>=96000){return;}
+						FluidStack tankFluidData = tankContainer.drain(tankDirection.getOpposite(), 1, false);
+						if(tankFluidData == null){
+							return;
+						}else if(tankCart.fuel == 0){//empty tank cart
+							this.setCartColor(tankFluidData.getFluid(), tankCart);
+							tankCart.fuelType = tankFluidData.fluidID;
+						}else if(tankCart.fuelType != tankFluidData.fluidID){
+							return;
 						}
-						if(tankContainer.canDrain(tankDirection.getOpposite(), tankCartFluid.getFluid())){
-							tankCartFluid=tankContainer.drain(tankDirection.getOpposite(), 100, true);
-							if(tankCartFluid==null){return;}
-							tankCartNBT.setInteger("PortalCooldown", tankCartAmount+tankCartFluid.amount);
+						FluidStack fluidToFill = new FluidStack(tankCart.fuelType, Math.min(96000 - tankCart.fuel, 100));
+
+						if(tankContainer.canDrain(tankDirection.getOpposite(), fluidToFill.getFluid())){
+							fluidToFill = tankContainer.drain(tankDirection.getOpposite(), fluidToFill.amount, true);
+							if(fluidToFill == null){
+								return;
+							}else{
+								tankCart.fuel += fluidToFill.amount;
+								RoW.network.sendToAll(new PacketFuel(tankCart.getEntityId(), tankCart.fuel));
+							}
 						}else{
 							return;
 						}
 					}
-					setStockNBT(tankCart, tankCartNBT);
 					changeOpStatus(true);
 				}
 			}
 		}
 	}
 	
-	public FluidStack getTankCartFluid(int tankCartColor, int tankCartAmount){
-		if(tankCartColor==2437522){return new FluidStack(new Fluid("water"), Math.min(tankCartAmount,100));}
-		if(tankCartColor==16711680){return new FluidStack(new Fluid("lava"), Math.min(tankCartAmount,100));}
-		if(tankCartColor==3158064 && FluidRegistry.isFluidRegistered(new Fluid("oil"))){
-			return new FluidStack(new Fluid("oil"), Math.min(tankCartAmount,100));
+	private void setCartColor(Fluid tankFluid, CartNT cart){
+		if(tankFluid.getName().equals("water")){
+			cart.colour = 2437522;
+		}else if(tankFluid.getName().equals("lava")){
+			cart.colour = 16711680;
+		}else if(tankFluid.getName().equals("oil")){
+			cart.colour = 3158064;
+		}else if(tankFluid.getName().equals("fuel")){
+			cart.colour = 14602026;
+		}else{
+			cart.colour = tankFluid.getColor();
 		}
-		if(tankCartColor==14602026 && FluidRegistry.isFluidRegistered(new Fluid("fuel"))){
-			return new FluidStack(new Fluid("fuel"), Math.min(tankCartAmount,100));
-		}
-		return null;
-	}
-	
-	public int getFluidColor(FluidStack tankFluid){
-		if(tankFluid==null){return 0;}
-		if(tankFluid.getLocalizedName().equals("Water")){return 2437522;}
-		if(tankFluid.getLocalizedName().equals("Lava")){return 16711680;}
-		if(tankFluid.getLocalizedName().equals("Oil")){return 3158064;}
-		if(tankFluid.getLocalizedName().equals("Fuel")){return 14602026;}
-		return 0;
+		cart.sendUpdateToClient();
 	}
 	
 	
