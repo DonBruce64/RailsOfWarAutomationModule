@@ -2,6 +2,7 @@ package rowautomation.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.row.stock.core.RoWLocomotive;
+import net.row.stock.core.RoWRollingStock;
 import net.row.tileentity.TileEntityTrackNormal;
 
 public class TileEntityPointer extends TileEntityBase{
@@ -21,24 +22,44 @@ public class TileEntityPointer extends TileEntityBase{
 			}
 			return;
 		}else if(spring){
-			if(switched){
-				changePointer(true);
-			}else{
-				changePointer(false);
+			if(getAllNearbyStock(RoWRollingStock.class, range).isEmpty()){
+				if(switched){
+					changePointer(true);
+				}else{
+					changePointer(false);
+				}
 			}
 			return;
 		}
 		if(locoLabel==""){return;}
-		RoWLocomotive loco = (RoWLocomotive) getNearbyStock(RoWLocomotive.class,range);
+		RoWLocomotive loco = (RoWLocomotive) getNearbyStock(RoWLocomotive.class, range);
 		if(loco==null){return;}
 		if(loco.label.equals(this.locoLabel) && !(loco.onActiveSwitch==this.switched)){
 			loco.onActiveSwitch = this.switched;
+			changePointer(this.switched);
 		}
 		if(!loco.label.equals(this.locoLabel) && loco.onActiveSwitch==this.switched && locked){
 			loco.onActiveSwitch = !this.switched;
+			changePointer(!this.switched);
 		}
 	}
 	
+	private void changePointer(boolean switchStatus){
+		for(int i=0;i<worldObj.loadedTileEntityList.size();++i){
+			if(worldObj.loadedTileEntityList.get(i) instanceof TileEntityTrackNormal){
+				TileEntityTrackNormal track=(TileEntityTrackNormal) worldObj.loadedTileEntityList.get(i);
+				if(Math.abs(track.xCoord-this.xCoord)<=range && Math.abs(track.yCoord-this.yCoord)<=range && Math.abs(track.zCoord-this.zCoord)<=range){
+					if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
+						if(!track.activated && switchStatus){
+							track.activated = true;
+						}else if(track.activated && !switchStatus){
+							track.activated = false;
+						}
+					}					
+				}
+			}
+		}
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound tagcompound){
@@ -58,22 +79,5 @@ public class TileEntityPointer extends TileEntityBase{
 		tagcompound.setBoolean("spring", this.spring);
 		tagcompound.setBoolean("switched", this.switched);
 		tagcompound.setString("locoLabel", this.locoLabel);
-	}
-	
-	private void changePointer(boolean switchStatus){
-		for(int i=0;i<worldObj.loadedTileEntityList.size();++i){
-			if(worldObj.loadedTileEntityList.get(i) instanceof TileEntityTrackNormal){
-				TileEntityTrackNormal track=(TileEntityTrackNormal) worldObj.loadedTileEntityList.get(i);
-				if(Math.abs(track.xCoord-this.xCoord)<=range && Math.abs(track.yCoord-this.yCoord)<=range && Math.abs(track.zCoord-this.zCoord)<=range){
-					if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
-						if(!track.activated && switchStatus){
-							track.activated = true;
-						}else if(track.activated && !switchStatus){
-							track.activated = false;
-						}
-					}					
-				}
-			}
-		}
 	}
 }

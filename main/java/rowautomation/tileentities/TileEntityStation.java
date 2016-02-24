@@ -5,6 +5,7 @@ import java.util.List;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.AxisAlignedBB;
+import net.row.entity.EntityCartRider;
 import net.row.stock.cart.CartIII2L12;
 import net.row.stock.cart.CartNTV;
 import net.row.stock.core.RoWLocomotive;
@@ -34,7 +35,7 @@ public class TileEntityStation extends TileEntityBase{
 		changeOpStatus(true);
 		if(!locomotive.isBrakeOn){
 			locomotive.isBrakeOn = true;
-			unmountEntities();
+			if(!worldObj.isRemote){unmountEntities();}
 			if(whistleMode==2 || whistleMode==4){blowWhistle(locomotive);}
 		}
 		if(opMode==1){
@@ -46,25 +47,21 @@ public class TileEntityStation extends TileEntityBase{
 		
 		locomotive.reverse = reverseSet;
 		locomotive.isBrakeOn = false;
-		mountEntities();
+		if(!worldObj.isRemote){mountEntities();}
 		if(whistleMode==3 || whistleMode==4){blowWhistle(locomotive);}
 		changeOpStatus(false);
 		ticks=1;
 	}
 	
-	private void blowWhistle(Entity locomotive){
-		String whistleName="";
-		if(locomotive.getClass().getName().contains("Ov")){whistleName="row:whistle_ov";}
-		if(locomotive.getClass().getName().contains("Yer")){whistleName="row:whistle_yer";}
-		if(locomotive.getClass().getName().contains("Cher")){whistleName="row:whistle_cher";}
-		worldObj.playSound(locomotive.posX, locomotive.posY, locomotive.posZ, whistleName, whistleVolume, whistlePitch, true);
+	private void blowWhistle(RoWLocomotive locomotive){
+		worldObj.playSound(locomotive.posX, locomotive.posY, locomotive.posZ, "row:" + locomotive.hornSound, whistleVolume, whistlePitch, true);
 	}
 	
 	private void mountEntities(){
-		List stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
+		List<RoWRollingStock> stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
 		for(int i=0; i<stockList.size(); ++i){
-			Entity stock=(Entity) stockList.get(i);
-			if(stock.riddenByEntity==null && isValidMountingStock(stock, loadingOps)){
+			RoWRollingStock stock = stockList.get(i);
+			if(isValidMountingStock(stock, loadingOps)){
 				if(stock.motionX<1 && stock.motionZ<1){
 					double[] mountingOffset = getMountingOffset(stock, loadingOps);
 					AxisAlignedBB loadingArea;
@@ -73,22 +70,15 @@ public class TileEntityStation extends TileEntityBase{
 					}else{
 						loadingArea=stock.boundingBox.offset(mountingOffset[0], mountingOffset[1], mountingOffset[2]).expand(2, 2, 2);
 					}
-					double testDistance;
-					double shortestDistance = 10;
-					Entity closestEntity = null;
+					
 					List entityList = this.worldObj.getEntitiesWithinAABBExcludingEntity(stock, loadingArea);
 					for(int j=0; j<entityList.size(); ++j){
 						Entity testEntity = (Entity) entityList.get(j);
 						if(isValidMountingEntity(testEntity, loadingOps)){
-							testDistance=testEntity.getDistanceToEntity(stock);
-							if(testDistance<shortestDistance){
-								closestEntity=testEntity;
-								shortestDistance=testDistance;
-							}
+							EntityCartRider seat = new EntityCartRider(stock);
+							worldObj.spawnEntityInWorld(seat);
+							testEntity.mountEntity(seat);
 						}
-					}
-					if(closestEntity!=null){
-						closestEntity.mountEntity(stock);
 					}
 				}
 			}
@@ -96,17 +86,24 @@ public class TileEntityStation extends TileEntityBase{
 	}
 	
 	private void unmountEntities(){
-		double[] mountingOffset;
-		List stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
+		List<RoWRollingStock> stockList = getAllNearbyStock(RoWRollingStock.class, stationCartRange);
 		for(int i=0; i<stockList.size(); ++i){
-			Entity stock=(Entity) stockList.get(i);
-			if(stock.motionX<10 && stock.motionZ<10 && stock.riddenByEntity!=null){
-				if(isValidMountingStock(stock, unloadingOps) && isValidMountingEntity(stock.riddenByEntity, unloadingOps)){
-					stock.riddenByEntity.yOffset=0.0F;
-					stock.riddenByEntity.mountEntity(null);
-					mountingOffset=getMountingOffset(stock, unloadingOps);
-					stock.riddenByEntity.moveEntity(mountingOffset[0], mountingOffset[1], mountingOffset[2]);
-					stock.riddenByEntity.fallDistance=0.0F;
+			RoWRollingStock stock = stockList.get(i);
+			if(stock.motionX<10 && stock.motionZ<10){
+				if(isValidMountingStock(stock, unloadingOps)){
+					List seatEntites = worldObj.getEntitiesWithinAABB(EntityCartRider.class, stock.boundingBox.expand(5, 5, 5));
+					for(int j=0; j<seatEntites.size(); ++j){
+						EntityCartRider seat = (EntityCartRider) seatEntites.get(j);
+						if(seat.riddenByEntity != null && stock.UUID.equals(seat.parentUUID)){
+							Entity ridingEntity = seat.riddenByEntity;
+							if(isValidMountingEntity(ridingEntity, unloadingOps)){
+								ridingEntity.mountEntity(null);
+								double[] mountingOffset = getMountingOffset(stock, unloadingOps);
+								ridingEntity.moveEntity(mountingOffset[0], mountingOffset[1], mountingOffset[2]);
+								ridingEntity.fallDistance=0.0F;
+							}
+						}
+					}
 				}
 			}
 		}

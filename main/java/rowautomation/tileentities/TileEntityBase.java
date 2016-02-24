@@ -8,6 +8,7 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.row.stock.core.RoWRollingStock;
 
 public class TileEntityBase extends TileEntity{
 	public boolean finishedOperation=false;
@@ -15,8 +16,8 @@ public class TileEntityBase extends TileEntity{
 	public int detectorRange=6;
 	public int stationCartRange=25;
 	
-	public Entity getNearbyStock(Class stockClass, int stockRange){
-		List<Entity> entityList = getAllNearbyStock(stockClass, stockRange);
+	public RoWRollingStock getNearbyStock(Class stockClass, int stockRange){
+		List<RoWRollingStock> entityList = getAllNearbyStock(stockClass, stockRange);
 		if(entityList.size() > 0){
 			return entityList.get(0);
 		}else{
@@ -24,7 +25,7 @@ public class TileEntityBase extends TileEntity{
 		}
 	}
 	
-	public List getAllNearbyStock(Class stockClass, int stockRange){
+	public List<RoWRollingStock> getAllNearbyStock(Class stockClass, int stockRange){
 		return this.worldObj.getEntitiesWithinAABB(stockClass, this.getRenderBoundingBox().expand(range, range, range));
 	}
 	
