@@ -2,12 +2,12 @@ package rowautomation.tileentities;
 
 import java.util.List;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
 import net.row.stock.core.RoWRollingStock;
 
 public class TileEntityBase extends TileEntity{
@@ -26,7 +26,7 @@ public class TileEntityBase extends TileEntity{
 	}
 	
 	public List<RoWRollingStock> getAllNearbyStock(Class stockClass, int stockRange){
-		return this.worldObj.getEntitiesWithinAABB(stockClass, this.getRenderBoundingBox().expand(range, range, range));
+		return this.worldObj.getEntitiesWithinAABB(stockClass, AxisAlignedBB.getBoundingBox(this.xCoord - range, this.yCoord - range, this.zCoord - range/2, this.xCoord + range/2, this.yCoord + range/2, this.zCoord + range/2));
 	}
 	
 	public void changeOpStatus(boolean setStatus){
