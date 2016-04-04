@@ -1,6 +1,7 @@
 package rowautomation;
 
 import rowautomation.blocks.controller.BlockDetector;
+import rowautomation.blocks.controller.BlockFreight;
 import rowautomation.blocks.controller.BlockFueler;
 import rowautomation.blocks.controller.BlockPointer;
 import rowautomation.blocks.controller.BlockSignal;
@@ -10,6 +11,7 @@ import rowautomation.network.PacketPointer;
 import rowautomation.network.PacketSignal;
 import rowautomation.network.PacketStation;
 import rowautomation.tileentities.TileEntityDetector;
+import rowautomation.tileentities.TileEntityFreight;
 import rowautomation.tileentities.TileEntityFueler;
 import rowautomation.tileentities.TileEntityPointer;
 import rowautomation.tileentities.TileEntitySignal;
@@ -30,6 +32,7 @@ public class CommonProxy{
 	    GameRegistry.registerBlock(new BlockStation(), "StationBlock");
 	    GameRegistry.registerBlock(new BlockPointer(), "PointerBlock");
 	    GameRegistry.registerBlock(new BlockTank(), "TankBlock");
+	    GameRegistry.registerBlock(new BlockFreight(), "FreightBlock");
 	    GameRegistry.registerBlock(new BlockFueler(), "FuelingBlock");
 	    GameRegistry.registerBlock(new BlockDetector(), "DetectorBlock");
 	}
@@ -39,6 +42,7 @@ public class CommonProxy{
 	    GameRegistry.registerTileEntity(TileEntityStation.class,"StationTileEntity");
 	    GameRegistry.registerTileEntity(TileEntityPointer.class,"PointerTileEntity");
 	    GameRegistry.registerTileEntity(TileEntityTank.class,"TankTileEntity");
+	    GameRegistry.registerTileEntity(TileEntityFreight.class,"FreightTileEntity");
 	    GameRegistry.registerTileEntity(TileEntityFueler.class,"FuelingTileEntity");
 	    GameRegistry.registerTileEntity(TileEntityDetector.class,"DetectorTileEntity");
 	}

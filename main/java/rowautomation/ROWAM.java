@@ -21,7 +21,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ROWAM{
 	public static final String MODID="rowam";
 	public static final String MODNAME="Rails of War Automation Module";
-	public static final String MODVER="7.1.1";
+	public static final String MODVER="7.2.0";
 	
 	public static final Chunkloader chunkLoader = new Chunkloader();
 	public static final SimpleNetworkWrapper ROWAMNet = NetworkRegistry.INSTANCE.newSimpleChannel("ROWAMNet");

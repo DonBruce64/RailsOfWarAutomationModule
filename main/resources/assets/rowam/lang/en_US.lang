@@ -2,6 +2,7 @@ tile.SignalBlock.name=Signal Block
 tile.StationBlock.name=Station Block
 tile.PointerBlock.name=Pointer Block
 tile.TankBlock.name=Tank Block
+tile.FreightBlock.name=Freight Block
 tile.FuelingBlock.name=Fueling Block
 tile.DetectorBlock.name=Detector Block
 itemGroup.tabROWAM=ROWAM

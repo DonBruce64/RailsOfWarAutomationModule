@@ -67,6 +67,7 @@ public class BlockBase extends BlockContainer implements ITileEntityProvider{
         IconMap.put("SignalBlock", par1IconRegister.registerIcon("rowam:signalblock"));
         IconMap.put("StationBlock", par1IconRegister.registerIcon("rowam:stationblock"));
         IconMap.put("TankBlock", par1IconRegister.registerIcon("rowam:fillingblock"));
+        IconMap.put("FreightBlock", par1IconRegister.registerIcon("rowam:loadingblock"));
         IconMap.put("DetectorBlock", par1IconRegister.registerIcon("rowam:detectorblock"));
         IconMap.put("EndIcon", par1IconRegister.registerIcon("rowam:blockbase"));
     }

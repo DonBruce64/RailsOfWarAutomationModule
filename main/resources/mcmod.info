@@ -3,7 +3,7 @@
   "modid": "rowam",
   "name": "Rails of War Automation Module",
   "description": "Automation and extras for Rails of War.",
-  "version": "7.1.1",
+  "version": "7.2.0",
   "mcversion": "${mcversion}",
   "url": "",
   "updateUrl": "",
