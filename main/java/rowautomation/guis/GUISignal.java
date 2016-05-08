@@ -50,9 +50,9 @@ public class GUISignal extends GuiScreen{
     	reverseMinBox = new GuiTextField(fontRendererObj, x+90, y+105, 40, 15);
     	reverseSetMinBox = new GuiTextField(fontRendererObj, x+90, y+125, 40, 15);	
     	reverseMaxBox.setMaxStringLength(3);
-    	reverseSetMaxBox.setMaxStringLength(3);
+    	reverseSetMaxBox.setMaxStringLength(4);
     	reverseMinBox.setMaxStringLength(3);
-    	reverseSetMinBox.setMaxStringLength(3);
+    	reverseSetMinBox.setMaxStringLength(4);
     	locoLabelBox.setText(locoLabel);
     	reverseMaxBox.setText(String.valueOf(reverseMax));
     	reverseSetMaxBox.setText(String.valueOf(reverseSetMax));

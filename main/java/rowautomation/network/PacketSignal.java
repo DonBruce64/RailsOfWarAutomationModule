@@ -63,8 +63,8 @@ public class PacketSignal implements IMessage{
 				TileEntitySignal thisTileEntity = (TileEntitySignal) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
 				thisTileEntity.reverseMax=message.reverseMax;
 				thisTileEntity.reverseMin=message.reverseMin;
-				thisTileEntity.reverseSetMax=Math.max(message.reverseSetMax, 100);
-				thisTileEntity.reverseSetMin=Math.min(message.reverseSetMin, -100);
+				thisTileEntity.reverseSetMax=Math.max(Math.min(message.reverseSetMax, 100), -100);
+				thisTileEntity.reverseSetMin=Math.max(Math.min(message.reverseSetMin, 100), -100);
 				thisTileEntity.locoLabel=message.locoLabel;
 				ctx.getServerHandler().playerEntity.worldObj.markBlockForUpdate(message.x, message.y, message.z);
 			}
