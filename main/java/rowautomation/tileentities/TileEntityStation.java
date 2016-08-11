@@ -45,7 +45,7 @@ public class TileEntityStation extends TileEntityBase{
 		if(opMode==2 && (worldObj.getWorldTime()%24000) != scheduledTime){return;}
 		if(opMode==3 && (this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)==0)){return;}
 		
-		locomotive.reverse = reverseSet;
+		locomotive.reverse = (int) ((reverseSet/100F)*locomotive.maxReverse);
 		locomotive.isBrakeOn = false;
 		if(!worldObj.isRemote){mountEntities();}
 		if(whistleMode==3 || whistleMode==4){blowWhistle(locomotive);}

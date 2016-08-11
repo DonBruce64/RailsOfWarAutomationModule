@@ -82,7 +82,7 @@ public class PacketStation implements IMessage{
 			if(ctx.side==Side.SERVER){
 				TileEntityStation thisTileEntity = (TileEntityStation) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
 				thisTileEntity.opMode=message.opMode;
-				thisTileEntity.reverseSet=message.reverseSet;
+				thisTileEntity.reverseSet=Math.max(Math.min(message.reverseSet, 100), -100);
 				thisTileEntity.tickDelay=message.tickDelay;
 				thisTileEntity.whistleMode=message.whistleMode;
 				thisTileEntity.loadingOps=message.loadingOps;

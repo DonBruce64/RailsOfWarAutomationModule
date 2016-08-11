@@ -24,13 +24,13 @@ public class TileEntitySignal extends TileEntityBase{
 		if(!this.locoLabel.equals("") && !locomotive.label.equals(this.locoLabel)){return;}
 		if(Math.abs(locomotive.reverse)>reverseMax){
 			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMax)){
-				locomotive.reverse =  (int) (getSign(locomotive.reverse)*reverseSetMax*locomotive.maxReverse);
+				locomotive.reverse =  (int) (getSign(locomotive.reverse)*(reverseSetMax/100F)*locomotive.maxReverse);
 				changeOpStatus(true);
 				cooldown=10;
 			}
 		}else if(Math.abs(locomotive.reverse)<reverseMin){
 			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMin)){
-				locomotive.reverse = (int) (getSign(locomotive.reverse)*reverseSetMin*locomotive.maxReverse);
+				locomotive.reverse = (int) (getSign(locomotive.reverse)*(reverseSetMin/100F)*locomotive.maxReverse);
 				cooldown=10;
 			}
 		}
