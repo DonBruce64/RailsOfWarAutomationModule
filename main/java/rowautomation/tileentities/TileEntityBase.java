@@ -26,7 +26,7 @@ public class TileEntityBase extends TileEntity{
 	}
 	
 	public List<RoWRollingStock> getAllNearbyStock(Class stockClass, int stockRange){
-		return this.worldObj.getEntitiesWithinAABB(stockClass, AxisAlignedBB.getBoundingBox(this.xCoord - range, this.yCoord - range, this.zCoord - range/2, this.xCoord + range/2, this.yCoord + range/2, this.zCoord + range/2));
+		return this.worldObj.getEntitiesWithinAABB(stockClass, AxisAlignedBB.getBoundingBox(this.xCoord - range, this.yCoord - range, this.zCoord - range, this.xCoord + range, this.yCoord + range, this.zCoord + range));
 	}
 	
 	public void changeOpStatus(boolean setStatus){

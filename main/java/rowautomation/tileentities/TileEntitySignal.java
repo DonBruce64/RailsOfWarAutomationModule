@@ -22,14 +22,15 @@ public class TileEntitySignal extends TileEntityBase{
 		RoWLocomotive locomotive = (RoWLocomotive) getNearbyStock(RoWLocomotive.class,range);
 		if(locomotive==null){return;}
 		if(!this.locoLabel.equals("") && !locomotive.label.equals(this.locoLabel)){return;}
-		if(Math.abs(locomotive.reverse)>reverseMax){
-			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMax)){
+		int normalizedReverse = (int) Math.abs(100F*locomotive.reverse/locomotive.maxReverse);
+		if(normalizedReverse>reverseMax){
+			if(normalizedReverse!=Math.abs(reverseSetMax)){
 				locomotive.reverse =  (int) (getSign(locomotive.reverse)*(reverseSetMax/100F)*locomotive.maxReverse);
 				changeOpStatus(true);
 				cooldown=10;
 			}
-		}else if(Math.abs(locomotive.reverse)<reverseMin){
-			if(Math.abs(locomotive.reverse)!=Math.abs(reverseSetMin)){
+		}else if(normalizedReverse<reverseMin){
+			if(normalizedReverse!=Math.abs(reverseSetMin)){
 				locomotive.reverse = (int) (getSign(locomotive.reverse)*(reverseSetMin/100F)*locomotive.maxReverse);
 				cooldown=10;
 			}
