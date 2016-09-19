@@ -14,76 +14,78 @@ public class TileEntityFreight extends TileEntityBase{
 
 	@Override
 	public void updateEntity(){
-		if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
-		if(transferCooldown>8){
-			transferCooldown=0;
-		}else{
-			++transferCooldown;
-			return;
-		}
-		
-		boolean foundChest = false;
-		changeOpStatus(false);
-		IInventory tubInventory = (CartCherepanovTub) getNearbyStock(CartCherepanovTub.class, range);
-		if(tubInventory == null){return;}
-		for(int i=0;i<6;++i){
-			ForgeDirection chestDirection = ForgeDirection.getOrientation(i);
-			TileEntity testTileEntity = worldObj.getTileEntity(xCoord+chestDirection.offsetX, yCoord+chestDirection.offsetY, zCoord+chestDirection.offsetZ);
-			if(testTileEntity!=null){
-				if(IInventory.class.isAssignableFrom(testTileEntity.getClass())){
-					IInventory chest = (IInventory) testTileEntity;
-					if(this.load){
-						for(int j=0; j<chest.getSizeInventory(); ++j){
-							ItemStack chestStack = chest.getStackInSlot(j);
-							if(chestStack == null){continue;}
-							for(int k=0; k<tubInventory.getSizeInventory(); ++k){
-								ItemStack tubStack = tubInventory.getStackInSlot(k);
-								if(tubStack != null){
-									if(tubStack.getItem().equals(chestStack.getItem())){
-										if(tubStack.getMaxStackSize() - tubStack.stackSize > 0){
-											++tubStack.stackSize;
-											--chestStack.stackSize;
-											if(chestStack.stackSize == 0){
-												chest.setInventorySlotContents(j, null);
+		if(!worldObj.isRemote){
+			if(worldObj.getBlockPowerInput(xCoord, yCoord, zCoord)>0){return;}
+			if(transferCooldown>8){
+				transferCooldown=0;
+			}else{
+				++transferCooldown;
+				return;
+			}
+			
+			boolean foundChest = false;
+			changeOpStatus(false);
+			IInventory tubInventory = (CartCherepanovTub) getNearbyStock(CartCherepanovTub.class, range);
+			if(tubInventory == null){return;}
+			for(int i=0;i<6;++i){
+				ForgeDirection chestDirection = ForgeDirection.getOrientation(i);
+				TileEntity testTileEntity = worldObj.getTileEntity(xCoord+chestDirection.offsetX, yCoord+chestDirection.offsetY, zCoord+chestDirection.offsetZ);
+				if(testTileEntity!=null){
+					if(IInventory.class.isAssignableFrom(testTileEntity.getClass())){
+						IInventory chest = (IInventory) testTileEntity;
+						if(this.load){
+							for(int j=0; j<chest.getSizeInventory(); ++j){
+								ItemStack chestStack = chest.getStackInSlot(j);
+								if(chestStack == null){continue;}
+								for(int k=0; k<tubInventory.getSizeInventory(); ++k){
+									ItemStack tubStack = tubInventory.getStackInSlot(k);
+									if(tubStack != null){
+										if(tubStack.getItem().equals(chestStack.getItem())){
+											if(tubStack.getMaxStackSize() - tubStack.stackSize > 0){
+												++tubStack.stackSize;
+												--chestStack.stackSize;
+												if(chestStack.stackSize == 0){
+													chest.setInventorySlotContents(j, null);
+												}
+												changeOpStatus(true);
+												return;
 											}
+										}
+									}else{
+										if(chestStack.getItem() instanceof ItemBlock){
+											tubInventory.setInventorySlotContents(k, new ItemStack(chestStack.getItem()));
+											--chestStack.stackSize;
 											changeOpStatus(true);
 											return;
 										}
-									}
-								}else{
-									if(chestStack.getItem() instanceof ItemBlock){
-										tubInventory.setInventorySlotContents(k, new ItemStack(chestStack.getItem()));
-										--chestStack.stackSize;
-										changeOpStatus(true);
-										return;
 									}
 								}
 							}
-						}
-					}else{
-						for(int j=0; j<tubInventory.getSizeInventory(); ++j){
-							ItemStack tubStack = tubInventory.getStackInSlot(j);
-							if(tubStack == null){continue;}
-							for(int k=0; k<chest.getSizeInventory(); ++k){
-								ItemStack chestStack = chest.getStackInSlot(k);
-								if(chestStack != null){
-									if(chestStack.getItem().equals(tubStack.getItem())){
-										if(chestStack.getMaxStackSize() - chestStack.stackSize > 0){
-											++chestStack.stackSize;
-											--tubStack.stackSize;
-											if(tubStack.stackSize == 0){
-												tubInventory.setInventorySlotContents(j, null);
+						}else{
+							for(int j=0; j<tubInventory.getSizeInventory(); ++j){
+								ItemStack tubStack = tubInventory.getStackInSlot(j);
+								if(tubStack == null){continue;}
+								for(int k=0; k<chest.getSizeInventory(); ++k){
+									ItemStack chestStack = chest.getStackInSlot(k);
+									if(chestStack != null){
+										if(chestStack.getItem().equals(tubStack.getItem())){
+											if(chestStack.getMaxStackSize() - chestStack.stackSize > 0){
+												++chestStack.stackSize;
+												--tubStack.stackSize;
+												if(tubStack.stackSize == 0){
+													tubInventory.setInventorySlotContents(j, null);
+												}
+												changeOpStatus(true);
+												return;
 											}
+										}
+									}else{
+										if(tubStack.getItem() instanceof ItemBlock){
+											chest.setInventorySlotContents(k, new ItemStack(tubStack.getItem()));
+											--tubStack.stackSize;
 											changeOpStatus(true);
 											return;
 										}
-									}
-								}else{
-									if(tubStack.getItem() instanceof ItemBlock){
-										chest.setInventorySlotContents(k, new ItemStack(tubStack.getItem()));
-										--tubStack.stackSize;
-										changeOpStatus(true);
-										return;
 									}
 								}
 							}
