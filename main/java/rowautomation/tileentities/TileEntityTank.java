@@ -71,15 +71,15 @@ public class TileEntityTank extends TileEntityBase{
 	
 	private void setCartColor(Fluid tankFluid, CartNT cart){
 		if(tankFluid.getName().equals("water")){
-			cart.colour = 2437522;
+			cart.colourPrimary = 2437522;
 		}else if(tankFluid.getName().equals("lava")){
-			cart.colour = 16711680;
+			cart.colourPrimary = 16711680;
 		}else if(tankFluid.getName().equals("oil")){
-			cart.colour = 3158064;
+			cart.colourPrimary = 3158064;
 		}else if(tankFluid.getName().equals("fuel")){
-			cart.colour = 14602026;
+			cart.colourPrimary = 14602026;
 		}else{
-			cart.colour = tankFluid.getColor();
+			cart.colourPrimary = tankFluid.getColor();
 		}
 		cart.sendUpdateToClient();
 	}
