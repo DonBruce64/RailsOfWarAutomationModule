@@ -40,7 +40,7 @@ public class TileEntityFreight extends TileEntityBase{
 								for(int k=0; k<tubInventory.getSizeInventory(); ++k){
 									ItemStack tubStack = tubInventory.getStackInSlot(k);
 									if(tubStack != null){
-										if(tubStack.getItem().equals(chestStack.getItem())){
+										if(tubStack.isItemEqual(chestStack)){
 											if(tubStack.getMaxStackSize() - tubStack.stackSize > 0){
 												++tubStack.stackSize;
 												--chestStack.stackSize;
@@ -53,7 +53,7 @@ public class TileEntityFreight extends TileEntityBase{
 										}
 									}else{
 										if(chestStack.getItem() instanceof ItemBlock){
-											tubInventory.setInventorySlotContents(k, new ItemStack(chestStack.getItem()));
+											tubInventory.setInventorySlotContents(k, new ItemStack(chestStack.getItem(), 1, chestStack.getItemDamage()));
 											--chestStack.stackSize;
 											changeOpStatus(true);
 											return;
@@ -68,7 +68,7 @@ public class TileEntityFreight extends TileEntityBase{
 								for(int k=0; k<chest.getSizeInventory(); ++k){
 									ItemStack chestStack = chest.getStackInSlot(k);
 									if(chestStack != null){
-										if(chestStack.getItem().equals(tubStack.getItem())){
+										if(chestStack.isItemEqual(tubStack)){
 											if(chestStack.getMaxStackSize() - chestStack.stackSize > 0){
 												++chestStack.stackSize;
 												--tubStack.stackSize;
@@ -81,7 +81,7 @@ public class TileEntityFreight extends TileEntityBase{
 										}
 									}else{
 										if(tubStack.getItem() instanceof ItemBlock){
-											chest.setInventorySlotContents(k, new ItemStack(tubStack.getItem()));
+											chest.setInventorySlotContents(k, new ItemStack(tubStack.getItem(), 1, tubStack.getItemDamage()));
 											--tubStack.stackSize;
 											changeOpStatus(true);
 											return;
