@@ -1,13 +1,10 @@
 package rowautomation.blocks.controller;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
-import net.minecraft.util.IChatComponent;
 import net.minecraft.world.World;
 import rowautomation.tileentities.TileEntityFueler;
-import rowautomation.tileentities.TileEntityTank;
 
 public class BlockFueler extends BlockBase{
     

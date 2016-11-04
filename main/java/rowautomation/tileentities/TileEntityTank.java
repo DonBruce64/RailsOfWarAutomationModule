@@ -44,8 +44,8 @@ public class TileEntityTank extends TileEntityBase{
 								return;
 							}else if(tankCart.fuel == 0){//empty tank cart
 								this.setCartColor(tankFluidData.getFluid(), tankCart);
-								tankCart.fuelType = tankFluidData.fluidID;
-							}else if(tankCart.fuelType != tankFluidData.fluidID){
+								tankCart.fuelType = tankFluidData.getFluidID();
+							}else if(tankCart.fuelType != tankFluidData.getFluidID()){
 								return;
 							}
 							FluidStack fluidToFill = new FluidStack(tankCart.fuelType, Math.min(96000 - tankCart.fuel, 100));

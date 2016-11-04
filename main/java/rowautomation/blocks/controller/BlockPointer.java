@@ -1,12 +1,11 @@
 package rowautomation.blocks.controller;
 
-import rowautomation.ROWAM;
-import rowautomation.ROWAM.GUIs;
-import rowautomation.guis.GUIHandler;
-import rowautomation.tileentities.TileEntityPointer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import rowautomation.ROWAM;
+import rowautomation.ROWAM.GUIs;
+import rowautomation.tileentities.TileEntityPointer;
 
 public class BlockPointer extends BlockBase{
 

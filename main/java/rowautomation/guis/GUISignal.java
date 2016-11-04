@@ -2,7 +2,6 @@ package rowautomation.guis;
 
 import java.awt.Color;
 
-import net.minecraft.client.gui.GuiLabel;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
@@ -18,16 +17,14 @@ public class GUISignal extends GuiScreen{
 	private TileEntitySignal thisTileEntity;
 	private int reverseMax;
 	private int reverseMin;
-	private int reverseSetMax;
-	private int reverseSetMin;
+	private int reverseSet;
 	private String locoLabel;
 
 	private static final ResourceLocation background = new ResourceLocation("rowam", "textures/gui/gui.png");	
 	private GuiTextField locoLabelBox;
 	private GuiTextField reverseMaxBox;
-	private GuiTextField reverseSetMaxBox;
 	private GuiTextField reverseMinBox;
-	private GuiTextField reverseSetMinBox;	
+	private GuiTextField reverseSetBox;	
 
 	public GUISignal(TileEntitySignal thisTileEntity){
 		Keyboard.enableRepeatEvents(true);
@@ -35,9 +32,8 @@ public class GUISignal extends GuiScreen{
 		this.thisTileEntity=thisTileEntity;
 		this.locoLabel=thisTileEntity.locoLabel;
 		this.reverseMax=thisTileEntity.reverseMax;
-		this.reverseSetMax=thisTileEntity.reverseSetMax;
 		this.reverseMin=thisTileEntity.reverseMin;
-		this.reverseSetMin=thisTileEntity.reverseSetMin;
+		this.reverseSet=thisTileEntity.reverseSet;
 	}
 
 	@Override 
@@ -46,18 +42,15 @@ public class GUISignal extends GuiScreen{
     	int y=(this.height - 165)/2;
     	locoLabelBox = new GuiTextField(fontRendererObj, x+80, y+10, 80, 15);
     	reverseMaxBox = new GuiTextField(fontRendererObj, x+90, y+50, 40, 15);
-    	reverseSetMaxBox = new GuiTextField(fontRendererObj, x+90, y+70, 40, 15);
-    	reverseMinBox = new GuiTextField(fontRendererObj, x+90, y+105, 40, 15);
-    	reverseSetMinBox = new GuiTextField(fontRendererObj, x+90, y+125, 40, 15);	
+    	reverseMinBox = new GuiTextField(fontRendererObj, x+90, y+70, 40, 15);
+    	reverseSetBox = new GuiTextField(fontRendererObj, x+90, y+90, 40, 15);
     	reverseMaxBox.setMaxStringLength(3);
-    	reverseSetMaxBox.setMaxStringLength(4);
     	reverseMinBox.setMaxStringLength(3);
-    	reverseSetMinBox.setMaxStringLength(4);
+    	reverseSetBox.setMaxStringLength(4);
     	locoLabelBox.setText(locoLabel);
     	reverseMaxBox.setText(String.valueOf(reverseMax));
-    	reverseSetMaxBox.setText(String.valueOf(reverseSetMax));
     	reverseMinBox.setText(String.valueOf(reverseMin));
-    	reverseSetMinBox.setText(String.valueOf(reverseSetMin));
+    	reverseSetBox.setText(String.valueOf(reverseSet));
 	}
 	
 	
@@ -69,16 +62,13 @@ public class GUISignal extends GuiScreen{
     	drawTexturedModalRect(x, y, 0, 0, 175, 165); 	
     	locoLabelBox.drawTextBox();
     	reverseMaxBox.drawTextBox();
-    	reverseSetMaxBox.drawTextBox();
     	reverseMinBox.drawTextBox();
-    	reverseSetMinBox.drawTextBox();
+    	reverseSetBox.drawTextBox();
     	fontRendererObj.drawStringWithShadow("Loco Label:", x+10, y+15, Color.WHITE.getRGB());
     	fontRendererObj.drawStringWithShadow("Locos With", x+10, y+45, Color.WHITE.getRGB());
     	fontRendererObj.drawStringWithShadow("Throttles Over:", x+10, y+55, Color.WHITE.getRGB());
-    	fontRendererObj.drawStringWithShadow("Will be set to:", x+10, y+75, Color.WHITE.getRGB());
-    	fontRendererObj.drawStringWithShadow("Locos With", x+10, y+100, Color.WHITE.getRGB());
-    	fontRendererObj.drawStringWithShadow("Throttles Under:", x+10, y+110, Color.WHITE.getRGB());
-    	fontRendererObj.drawStringWithShadow("Will be set to:", x+10, y+130, Color.WHITE.getRGB());
+    	fontRendererObj.drawStringWithShadow("And Under:", x+10, y+75, Color.WHITE.getRGB());
+    	fontRendererObj.drawStringWithShadow("Will be set to:", x+10, y+95, Color.WHITE.getRGB());
     }
     
     @Override
@@ -86,9 +76,8 @@ public class GUISignal extends GuiScreen{
     	super.mouseClicked(x, y, p_73864_3_);
     	locoLabelBox.mouseClicked(x, y, p_73864_3_);
     	reverseMaxBox.mouseClicked(x, y, p_73864_3_);
-    	reverseSetMaxBox.mouseClicked(x, y, p_73864_3_);
     	reverseMinBox.mouseClicked(x, y, p_73864_3_);
-    	reverseSetMinBox.mouseClicked(x, y, p_73864_3_);
+    	reverseSetBox.mouseClicked(x, y, p_73864_3_);
     }
     
     @Override
@@ -101,12 +90,10 @@ public class GUISignal extends GuiScreen{
         }else if(isNumeric(key,bytecode)){
     		if(reverseMaxBox.isFocused()){
     			reverseMaxBox.textboxKeyTyped(key, bytecode);
-    		}else if(reverseSetMaxBox.isFocused()){
-    			reverseSetMaxBox.textboxKeyTyped(key, bytecode);
     		}else if(reverseMinBox.isFocused()){
     			reverseMinBox.textboxKeyTyped(key, bytecode);
-    		}else if(reverseSetMinBox.isFocused()){
-    			reverseSetMinBox.textboxKeyTyped(key, bytecode);
+    		}else if(reverseSetBox.isFocused()){
+    			reverseSetBox.textboxKeyTyped(key, bytecode);
     		}
         }else if(key=='e'){
             this.mc.displayGuiScreen((GuiScreen)null);
@@ -118,9 +105,8 @@ public class GUISignal extends GuiScreen{
     public void onGuiClosed(){
     	if(reverseMaxBox.getText().equals("")){reverseMaxBox.setText(String.valueOf(this.reverseMax));}
     	if(reverseMinBox.getText().equals("")){reverseMinBox.setText(String.valueOf(this.reverseMin));}
-    	if(reverseSetMaxBox.getText().equals("")){reverseSetMaxBox.setText(String.valueOf(this.reverseSetMax));}
-    	if(reverseSetMinBox.getText().equals("")){reverseSetMinBox.setText(String.valueOf(this.reverseSetMin));}
-    	PacketSignal ThisPacket=new PacketSignal(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord, Integer.parseInt(reverseMaxBox.getText()), Integer.parseInt(reverseMinBox.getText()), Integer.parseInt(reverseSetMaxBox.getText()), Integer.parseInt(reverseSetMinBox.getText()), locoLabelBox.getText());
+    	if(reverseSetBox.getText().equals("")){reverseSetBox.setText(String.valueOf(this.reverseSet));}
+    	PacketSignal ThisPacket=new PacketSignal(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord, Integer.parseInt(reverseMaxBox.getText()), Integer.parseInt(reverseMinBox.getText()), Integer.parseInt(reverseSetBox.getText()), locoLabelBox.getText());
     	ROWAM.ROWAMNet.sendToServer(ThisPacket);
 		thisTileEntity.getWorldObj().markBlockForUpdate(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord);
     }

@@ -6,8 +6,7 @@ import net.row.stock.core.RoWLocomotive;
 public class TileEntitySignal extends TileEntityBase{
 	public int reverseMax=999;
 	public int reverseMin=-1;
-	public int reverseSetMax=0;
-	public int reverseSetMin=0;
+	public int reverseSet=0;
 	public String locoLabel="";
 	private int cooldown=0;
 	
@@ -23,15 +22,10 @@ public class TileEntitySignal extends TileEntityBase{
 		if(locomotive==null){return;}
 		if(!this.locoLabel.equals("") && !locomotive.label.equals(this.locoLabel)){return;}
 		int normalizedReverse = (int) Math.abs(100F*locomotive.reverse/locomotive.maxReverse);
-		if(normalizedReverse>reverseMax){
-			if(normalizedReverse!=Math.abs(reverseSetMax)){
-				locomotive.reverse =  (int) (getSign(locomotive.reverse)*(reverseSetMax/100F)*locomotive.maxReverse);
+		if(normalizedReverse>reverseMax || normalizedReverse<reverseMin){
+			if(normalizedReverse!=Math.abs(reverseSet)){
+				locomotive.reverse =  (int) (getSign(locomotive.reverse)*(reverseSet/100F)*locomotive.maxReverse);
 				changeOpStatus(true);
-				cooldown=10;
-			}
-		}else if(normalizedReverse<reverseMin){
-			if(normalizedReverse!=Math.abs(reverseSetMin)){
-				locomotive.reverse = (int) (getSign(locomotive.reverse)*(reverseSetMin/100F)*locomotive.maxReverse);
 				cooldown=10;
 			}
 		}
@@ -46,8 +40,7 @@ public class TileEntitySignal extends TileEntityBase{
 		super.readFromNBT(tagcompound);
 	    this.reverseMax=tagcompound.getInteger("reverseMax");
 	    this.reverseMin=tagcompound.getInteger("reverseMin");
-	    this.reverseSetMax=tagcompound.getInteger("reverseSetMax");
-	    this.reverseSetMin=tagcompound.getInteger("reverseSetMin");
+	    this.reverseSet=tagcompound.getInteger("reverseSet");
 	    this.locoLabel = tagcompound.getString("locoLabel");
 	}
 	
@@ -56,8 +49,7 @@ public class TileEntitySignal extends TileEntityBase{
 		super.writeToNBT(tagcompound);
 		tagcompound.setInteger("reverseMax", this.reverseMax);
 		tagcompound.setInteger("reverseMin", this.reverseMin);
-		tagcompound.setInteger("reverseSetMax", this.reverseSetMax);
-		tagcompound.setInteger("reverseSetMin", this.reverseSetMin);
+		tagcompound.setInteger("reverseSet", this.reverseSet);
 		tagcompound.setString("locoLabel", this.locoLabel);
 	}
 }
