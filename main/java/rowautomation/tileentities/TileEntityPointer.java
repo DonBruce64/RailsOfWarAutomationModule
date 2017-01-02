@@ -49,7 +49,7 @@ public class TileEntityPointer extends TileEntityBase{
 		for(int i=-5;i<=5;++i){
 			for(int j=-5;j<=5;++j){
 				for(int k=-5;k<=5;++k){
-					TileEntity tile = worldObj.getTileEntity(i, j, k);
+					TileEntity tile = worldObj.getTileEntity(this.xCoord + i, this.yCoord + j, this.zCoord + k);
 					if(tile instanceof TileEntityTrackNormal){
 						TileEntityTrackNormal track=(TileEntityTrackNormal) tile;
 						if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
