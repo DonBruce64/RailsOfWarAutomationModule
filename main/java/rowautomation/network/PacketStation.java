@@ -1,12 +1,12 @@
 package rowautomation.network;
 
-import io.netty.buffer.ByteBuf;
-import rowautomation.tileentities.TileEntityStation;
 import cpw.mods.fml.common.network.ByteBufUtils;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
 import cpw.mods.fml.relauncher.Side;
+import io.netty.buffer.ByteBuf;
+import rowautomation.tileentities.TileEntityStation;
 	
 public class PacketStation implements IMessage{
 
@@ -15,6 +15,7 @@ public class PacketStation implements IMessage{
 	private int z;
 	private int opMode;
 	private int reverseSet;
+	private int regulatorSet;
 	private int tickDelay;
 	private int whistleMode;
 	private int loadingOps;
@@ -25,13 +26,13 @@ public class PacketStation implements IMessage{
 	private String locoLabel;
 
 	public PacketStation() { }
-	
-	public PacketStation(int x, int y, int z, int opMode, int reverseSet, int tickDelay, int whistleMode, int loadingOps, int unloadingOps, float whistleVolume, float whistlePitch, long scheduledTime, String locoLabel){
+	public PacketStation(int x, int y, int z, int opMode, int reverseSet, int regulatorSet, int tickDelay, int whistleMode, int loadingOps, int unloadingOps, float whistleVolume, float whistlePitch, long scheduledTime, String locoLabel){
 		this.x=x;
 		this.y=y;
 		this.z=z;
 		this.opMode=opMode;
 		this.reverseSet=reverseSet;
+		this.regulatorSet=regulatorSet;
 		this.tickDelay=tickDelay;
 		this.whistleMode=whistleMode;
 		this.loadingOps=loadingOps;
@@ -49,6 +50,7 @@ public class PacketStation implements IMessage{
 		this.z=buf.readInt();
 		this.opMode=buf.readInt();
 		this.reverseSet=buf.readInt();
+		this.regulatorSet=buf.readInt();
 		this.tickDelay=buf.readInt();
 		this.whistleMode=buf.readInt();
 		this.loadingOps=buf.readInt();
@@ -66,6 +68,7 @@ public class PacketStation implements IMessage{
 		buf.writeInt(this.z);
 		buf.writeInt(this.opMode);
 		buf.writeInt(this.reverseSet);
+		buf.writeInt(this.regulatorSet);
 		buf.writeInt(this.tickDelay);
 		buf.writeInt(this.whistleMode);
 		buf.writeInt(this.loadingOps);
@@ -83,6 +86,7 @@ public class PacketStation implements IMessage{
 				TileEntityStation thisTileEntity = (TileEntityStation) ctx.getServerHandler().playerEntity.worldObj.getTileEntity(message.x, message.y, message.z);
 				thisTileEntity.opMode=message.opMode;
 				thisTileEntity.reverseSet=Math.max(Math.min(message.reverseSet, 100), -100);
+				thisTileEntity.regulatorSet=Math.max(Math.min(message.regulatorSet, 100), 0);
 				thisTileEntity.tickDelay=message.tickDelay;
 				thisTileEntity.whistleMode=message.whistleMode;
 				thisTileEntity.loadingOps=message.loadingOps;

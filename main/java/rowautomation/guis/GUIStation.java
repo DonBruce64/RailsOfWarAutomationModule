@@ -2,13 +2,12 @@ package rowautomation.guis;
 
 import java.awt.Color;
 
+import org.lwjgl.input.Keyboard;
+
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.util.ResourceLocation;
-
-import org.lwjgl.input.Keyboard;
-
 import rowautomation.ROWAM;
 import rowautomation.network.PacketStation;
 import rowautomation.tileentities.TileEntityStation;
@@ -18,6 +17,7 @@ public class GUIStation extends GuiScreen{
 	private TileEntityStation thisTileEntity;
 	private int opMode;
 	private int reverseSet;
+	private int regulatorSet;
 	private int tickDelay;
 	private int whistleMode;
 	private int loadingOps;
@@ -40,6 +40,7 @@ public class GUIStation extends GuiScreen{
 	private GuiTextField tickDelayBox;
 	private GuiTextField scheduledTimeBox;
 	private GuiTextField reverseSetBox;
+	private GuiTextField regulatorSetBox;
 	private GuiTextField whistleVolumeBox;
 	private GuiTextField whistlePitchBox;
 	
@@ -60,6 +61,7 @@ public class GUIStation extends GuiScreen{
 		this.tickDelay=thisTileEntity.tickDelay;
 		this.scheduledTime=thisTileEntity.scheduledTime;
 		this.reverseSet=thisTileEntity.reverseSet;
+		this.regulatorSet=thisTileEntity.regulatorSet;
 		this.whistleMode=thisTileEntity.whistleMode;
 		this.whistleVolume=thisTileEntity.whistleVolume;
 		this.whistlePitch=thisTileEntity.whistlePitch;
@@ -75,13 +77,14 @@ public class GUIStation extends GuiScreen{
     	locoSettingsButton = new GuiButton(1, x-5, y-20, 85, 20, "Loco Settings");
     	locoLabelBox = new GuiTextField(fontRendererObj, x+80, y+10, 80, 15);
     	opModeButton = new GuiButton(1, x+80, y+30, 80, 20, "");
-    	opModeInfo = new GuiTextField(fontRendererObj, x+5, y+60, 100, 15);
-    	tickDelayBox = new GuiTextField(fontRendererObj, x+100, y+55, 60, 15);
-    	scheduledTimeBox = new GuiTextField(fontRendererObj, x+100, y+55, 60, 15);
-    	reverseSetBox = new GuiTextField(fontRendererObj, x+80, y+75, 80, 15);
-    	whistleModeButton = new GuiButton(1, x+80, y+95, 80, 20, "");
-    	whistleVolumeBox = new GuiTextField(fontRendererObj, x+55, y+120, 30, 20);
-    	whistlePitchBox = new GuiTextField(fontRendererObj, x+120, y+120, 30, 20);
+    	opModeInfo = new GuiTextField(fontRendererObj, x+5, y+55, 100, 15);
+    	tickDelayBox = new GuiTextField(fontRendererObj, x+100, y+50, 60, 15);
+    	scheduledTimeBox = new GuiTextField(fontRendererObj, x+100, y+50, 60, 15);
+    	reverseSetBox = new GuiTextField(fontRendererObj, x+80, y+70, 80, 15);
+    	regulatorSetBox = new GuiTextField(fontRendererObj, x+80, y+90, 80, 15);
+    	whistleModeButton = new GuiButton(1, x+80, y+110, 80, 20, "");
+    	whistleVolumeBox = new GuiTextField(fontRendererObj, x+55, y+130, 30, 20);
+    	whistlePitchBox = new GuiTextField(fontRendererObj, x+120, y+130, 30, 20);
     	whistleVolumeUpButton = new GuiButton(1, x+25, y+135, 20, 20, "+");
     	whistleVolumeDownButton = new GuiButton(1, x+45, y+135, 20, 20, "-");
     	whistlePitchUpButton = new GuiButton(1, x+90, y+135, 20, 20, "+");
@@ -92,7 +95,8 @@ public class GUIStation extends GuiScreen{
     	opModeInfo.setDisabledTextColour(Color.WHITE.getRGB());
     	tickDelayBox.setMaxStringLength(8);
     	scheduledTimeBox.setMaxStringLength(5);
-    	reverseSetBox.setMaxStringLength(3);
+    	reverseSetBox.setMaxStringLength(4);
+    	regulatorSetBox.setMaxStringLength(3);
     	whistleVolumeBox.setEnableBackgroundDrawing(false);
     	whistleVolumeBox.setEnabled(false);
     	whistleVolumeBox.setDisabledTextColour(Color.WHITE.getRGB());
@@ -110,6 +114,7 @@ public class GUIStation extends GuiScreen{
     	tickDelayBox.setText(String.valueOf(tickDelay));
     	scheduledTimeBox.setText(String.valueOf(scheduledTime));
     	reverseSetBox.setText(String.valueOf(reverseSet));
+    	regulatorSetBox.setText(String.valueOf(regulatorSet));
     	
     	freightSettingsButton = new GuiButton(1, x+79, y-20, 91, 20, "Freight Settings");
     	loadingEntityButton = new GuiButton(1, x+5, y+20, 70, 20, "");
@@ -187,6 +192,7 @@ public class GUIStation extends GuiScreen{
     	if(!locoSettingsButton.enabled){
 			locoLabelBox.drawTextBox();
 			reverseSetBox.drawTextBox();
+			regulatorSetBox.drawTextBox();
 			if(opMode==1){
 				opModeInfo.drawTextBox();
 				tickDelayBox.drawTextBox();
@@ -200,8 +206,9 @@ public class GUIStation extends GuiScreen{
 			whistleModeButton.drawButton(mc, mouseX, mouseY);
 			fontRendererObj.drawStringWithShadow("Loco Label:", x+10, y+15, Color.WHITE.getRGB());
 			fontRendererObj.drawStringWithShadow("Station Mode:", x+10, y+35, Color.WHITE.getRGB());
-			fontRendererObj.drawStringWithShadow("Throttle Set:", x+10, y+80, Color.WHITE.getRGB());
-			fontRendererObj.drawStringWithShadow("Whistle Mode:", x+10, y+100, Color.WHITE.getRGB());
+			fontRendererObj.drawStringWithShadow("Reverser Set:", x+10, y+75, Color.WHITE.getRGB());
+			fontRendererObj.drawStringWithShadow("Regulator Set:", x+10, y+95, Color.WHITE.getRGB());
+			fontRendererObj.drawStringWithShadow("Whistle Mode:", x+10, y+115, Color.WHITE.getRGB());
 			if(whistleMode!=1){
 				whistleVolumeBox.drawTextBox();
 				whistlePitchBox.drawTextBox();
@@ -298,6 +305,7 @@ public class GUIStation extends GuiScreen{
     	tickDelayBox.mouseClicked(x, y, p_73864_3_);
     	scheduledTimeBox.mouseClicked(x, y, p_73864_3_);
     	reverseSetBox.mouseClicked(x, y, p_73864_3_);
+    	regulatorSetBox.mouseClicked(x, y, p_73864_3_);
     	whistleVolumeBox.mouseClicked(x, y, p_73864_3_);
     	whistlePitchBox.mouseClicked(x, y, p_73864_3_);
     }
@@ -316,6 +324,8 @@ public class GUIStation extends GuiScreen{
         		scheduledTimeBox.textboxKeyTyped(key, bytecode);
         	}else if(reverseSetBox.isFocused()){
         		reverseSetBox.textboxKeyTyped(key, bytecode);
+        	}else if(regulatorSetBox.isFocused()){
+        		regulatorSetBox.textboxKeyTyped(key, bytecode);
         	}
     	}else if(key=='e'){
             this.mc.displayGuiScreen((GuiScreen)null);
@@ -326,9 +336,10 @@ public class GUIStation extends GuiScreen{
     @Override
     public void onGuiClosed(){
     	if(reverseSetBox.getText().equals("")){reverseSetBox.setText(String.valueOf(this.reverseSet));}
+    	if(regulatorSetBox.getText().equals("")){regulatorSetBox.setText(String.valueOf(this.regulatorSet));}
     	if(tickDelayBox.getText().equals("")){tickDelayBox.setText(String.valueOf(this.tickDelay));}
     	if(scheduledTimeBox.getText().equals("")){scheduledTimeBox.setText(String.valueOf(this.scheduledTime));}
-    	PacketStation thisPacket = new PacketStation(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord, opMode, Integer.parseInt(reverseSetBox.getText()), Integer.parseInt(tickDelayBox.getText()), whistleMode, loadingOps, unloadingOps, whistleVolume, whistlePitch, Long.parseLong(scheduledTimeBox.getText()), locoLabelBox.getText());
+    	PacketStation thisPacket = new PacketStation(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord, opMode, Integer.parseInt(reverseSetBox.getText()), Integer.parseInt(regulatorSetBox.getText()), Integer.parseInt(tickDelayBox.getText()), whistleMode, loadingOps, unloadingOps, whistleVolume, whistlePitch, Long.parseLong(scheduledTimeBox.getText()), locoLabelBox.getText());
     	ROWAM.ROWAMNet.sendToServer(thisPacket);
 		thisTileEntity.getWorldObj().markBlockForUpdate(thisTileEntity.xCoord, thisTileEntity.yCoord, thisTileEntity.zCoord);
     }
@@ -348,6 +359,7 @@ public class GUIStation extends GuiScreen{
 		tickDelayBox.setVisible(locoPage);
 		scheduledTimeBox.setVisible(locoPage);
 		reverseSetBox.setVisible(locoPage);
+		regulatorSetBox.setVisible(locoPage);
 		whistleVolumeBox.setVisible(locoPage);
 		whistlePitchBox.setVisible(locoPage);
 		

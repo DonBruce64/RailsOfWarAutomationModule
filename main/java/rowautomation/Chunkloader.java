@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.ChunkCoordIntPair;
@@ -14,11 +18,6 @@ import net.minecraftforge.common.ForgeChunkManager.Ticket;
 import net.minecraftforge.common.ForgeChunkManager.Type;
 import net.minecraftforge.event.world.WorldEvent;
 import net.row.stock.core.RoWRollingStock;
-
-import com.google.common.collect.Maps;
-
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 
 public class Chunkloader implements LoadingCallback{
 	private Entity stock;
@@ -36,7 +35,7 @@ public class Chunkloader implements LoadingCallback{
 				}else{
 					int[] blockPos = modTicket.getModData().getIntArray("blockPos");
 					if(blockPos.length != 0){
-						ForgeChunkManager.forceChunk(modTicket, new ChunkCoordIntPair((blockPos[0]-16)/16, (blockPos[2]-16)/16));//
+						ForgeChunkManager.forceChunk(modTicket, world.getChunkFromBlockCoords(blockPos[0], blockPos[2]).getChunkCoordIntPair());//
 						blockTickets.put(world.getBlock(blockPos[0], blockPos[1], blockPos[2]), modTicket);
 					}else{
 						ForgeChunkManager.releaseTicket(modTicket);
@@ -56,7 +55,7 @@ public class Chunkloader implements LoadingCallback{
 	public static void addBlockTicket(Block block, World world, int x, int y, int z){
 		Ticket blockTicket = ForgeChunkManager.requestTicket(ROWAM.instance, world, Type.NORMAL);
 		blockTicket.setChunkListDepth(1);
-		ForgeChunkManager.forceChunk(blockTicket, new ChunkCoordIntPair((x-16)/16, (z-16)/16));
+		ForgeChunkManager.forceChunk(blockTicket, world.getChunkFromBlockCoords(x, z).getChunkCoordIntPair());
 		blockTicket.getModData().setIntArray("blockPos", new int[]{x, y, z});		
 		blockTickets.put(block, blockTicket);
 	}

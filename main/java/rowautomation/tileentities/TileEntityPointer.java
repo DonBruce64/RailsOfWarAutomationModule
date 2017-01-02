@@ -1,6 +1,7 @@
 package rowautomation.tileentities;
 
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.row.stock.core.RoWLocomotive;
 import net.row.stock.core.RoWRollingStock;
 import net.row.tileentity.TileEntityTrackNormal;
@@ -45,17 +46,21 @@ public class TileEntityPointer extends TileEntityBase{
 	}
 	
 	private void changePointer(boolean switchStatus){
-		for(int i=0;i<worldObj.loadedTileEntityList.size();++i){
-			if(worldObj.loadedTileEntityList.get(i) instanceof TileEntityTrackNormal){
-				TileEntityTrackNormal track=(TileEntityTrackNormal) worldObj.loadedTileEntityList.get(i);
-				if(Math.abs(track.xCoord-this.xCoord)<=range && Math.abs(track.yCoord-this.yCoord)<=range && Math.abs(track.zCoord-this.zCoord)<=range){
-					if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
-						if(!track.activated && switchStatus){
-							track.activated = true;
-						}else if(track.activated && !switchStatus){
-							track.activated = false;
+		for(int i=-5;i<=5;++i){
+			for(int j=-5;j<=5;++j){
+				for(int k=-5;k<=5;++k){
+					TileEntity tile = worldObj.getTileEntity(i, j, k);
+					if(tile instanceof TileEntityTrackNormal){
+						TileEntityTrackNormal track=(TileEntityTrackNormal) tile;
+						if((track.type>=15 && track.type<=20)||(track.type>=27 && track.type<=32)){
+							if(!track.activated && switchStatus){
+								track.activated = true;
+							}else if(track.activated && !switchStatus){
+								track.activated = false;
+							}
+							return;
 						}
-					}					
+					}
 				}
 			}
 		}

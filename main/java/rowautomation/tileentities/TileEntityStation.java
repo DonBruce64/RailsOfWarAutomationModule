@@ -10,10 +10,12 @@ import net.row.stock.cart.CartIII2L12;
 import net.row.stock.cart.CartNTV;
 import net.row.stock.core.RoWLocomotive;
 import net.row.stock.core.RoWRollingStock;
+import net.row.stock.core.plugin.RegulatorA;
 
 public class TileEntityStation extends TileEntityBase{
 	public int opMode=1;
 	public int reverseSet=5;
+	public int regulatorSet=5;
 	public int ticks=1;
 	public int tickDelay=500;
 	public int whistleMode=1;
@@ -46,6 +48,10 @@ public class TileEntityStation extends TileEntityBase{
 		if(opMode==3 && (this.worldObj.getBlockPowerInput(this.xCoord, this.yCoord, this.zCoord)==0)){return;}
 		
 		locomotive.reverse = (int) ((reverseSet/100F)*locomotive.maxReverse);
+		if(locomotive instanceof RegulatorA){
+			RegulatorA locoReg = (RegulatorA) locomotive;
+			locoReg.setRegulator(locoReg.getRegulatorMax()*regulatorSet/100);
+		}
 		locomotive.isBrakeOn = false;
 		if(!worldObj.isRemote){mountEntities();}
 		if(whistleMode==3 || whistleMode==4){blowWhistle(locomotive);}
@@ -160,6 +166,7 @@ public class TileEntityStation extends TileEntityBase{
 	    this.ticks=tagcompound.getInteger("ticks");
 	    this.tickDelay=tagcompound.getInteger("tickDelay");
 	    this.reverseSet=tagcompound.getInteger("reverseSet");
+	    this.regulatorSet=tagcompound.getInteger("regulatorSet");
 	    this.whistleMode=tagcompound.getInteger("whistleMode");
 	    this.loadingOps=tagcompound.getInteger("loadingOps");
 	    this.unloadingOps=tagcompound.getInteger("unloadingOps");
@@ -176,6 +183,7 @@ public class TileEntityStation extends TileEntityBase{
 		tagcompound.setInteger("ticks", this.ticks);
 		tagcompound.setInteger("tickDelay", this.tickDelay);
 		tagcompound.setInteger("reverseSet", this.reverseSet);
+		tagcompound.setInteger("regulatorSet", this.regulatorSet);
 		tagcompound.setInteger("whistleMode", this.whistleMode);
 		tagcompound.setInteger("loadingOps", this.loadingOps);
 		tagcompound.setInteger("unloadingOps", this.unloadingOps);
